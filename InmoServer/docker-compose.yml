@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  cache-redis:
+    image: redis:latest
+    container_name: cache-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+  inmo-mysql-container:
+    build:
+      context: .
+    depends_on:
+      - mysql-db
+    environment:
+      - DB_HOST=mysql
+      - DB_USER=root
+      - DB_PASS=secret
+      - DB_NAME=inmo
+      - DB_DIALECT=mysql
+    networks:
+      - inmo-network
+
+  mysql-db:
+    image: mysql
+    container_name: mysql_inmo
+    environment:
+      - MYSQL_ROOT_PASSWORD=secret
+      - MYSQL_DATABASE=inmo
+    ports:
+      - "3306:3306"
+    networks:
+      - inmo-network
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  redis-data:
+  mysql-data:
+
+networks:
+  inmo-network:
+    external: true

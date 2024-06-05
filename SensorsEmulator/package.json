@@ -1,0 +1,20 @@
+{
+  "name": "sensorsemulator",
+  "version": "1.0.0",
+  "description": "Sensor signal emulator component",
+  "main": "./src/app.ts",
+  "scripts": {
+    "test": "test",
+    "start": "cd src && npx ts-node app.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IngSoft-AR-2023-2/186554_271968_274924.git"
+  },
+  "author": "Carme, Fer y Nacho",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/IngSoft-AR-2023-2/186554_271968_274924/issues"
+  },
+  "homepage": "https://github.com/IngSoft-AR-2023-2/186554_271968_274924#readme"
+}

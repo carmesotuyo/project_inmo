@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  bull-queue:
+    image: redis:latest
+    container_name: bull-queue
+    ports:
+      - "6378:6379"  # Note: Docker exposes internal port 6379 externally as 6378
+    volumes:
+      - redis-data:/data
+    networks:
+      - inmo-network
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb_reports
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: secret
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - inmo-network
+
+volumes:
+  redis-data:
+  mongo-data:
+
+networks:
+  inmo-network:
+    external: true
