@@ -4,7 +4,7 @@
   "description": "Reporter project for Inmo2.0",
   "main": "./src/app.ts",
   "scripts": {
-    "test": "test",
+    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "cd src && npx ts-node app.ts"
   },
   "repository": {
@@ -16,5 +16,19 @@
   "bugs": {
     "url": "https://github.com/IngSoft-AR-2023-2/186554_271968_274924/issues"
   },
-  "homepage": "https://github.com/IngSoft-AR-2023-2/186554_271968_274924#readme"
+  "homepage": "https://github.com/IngSoft-AR-2023-2/186554_271968_274924#readme",
+  "devDependencies": {
+    "@types/bull": "^4.10.0",
+    "ts-node": "^10.9.2",
+    "@types/express": "^4.17.21",
+    "@types/mongoose": "^5.11.97",
+    "@types/node": "^20.12.7",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "bull": "^4.12.2",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mongoose": "^8.3.2"
+  }
 }
