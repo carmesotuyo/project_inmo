@@ -14,5 +14,4 @@ export interface PropertyRequest {
     district: string;
     neighborhood: string;
     images: string[]; // Asumiendo que las imágenes son una matriz de URLs
-    status: 'Pendiente de pago' | 'Activo';
   }
