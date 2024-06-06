@@ -74,9 +74,13 @@ export const Property = sequelize.define('Property', {
       max: 20000
     },
   },
-  country: {
-    type: Country, //TODO agregar relacion
-    allowNull: false
+  countryId: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    references: {
+      model: 'Countries',
+      key: 'name'
+    }
   },
   stateOrProvince: {
     type: DataTypes.STRING,
