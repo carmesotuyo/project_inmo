@@ -3,7 +3,6 @@ import { Request, Response } from 'express';
 import { PropertyService } from '../servicesInterfaces/propertyService';
 import { QueueService } from '../servicesInterfaces/queueService';
 import { getErrorMessage } from '../utils/handleError';
-// import { PropertyDTO } from '../dtos/propertyDTO';
 // import { validateOrReject } from 'class-validator';
 // import { plainToClass } from 'class-transformer';
 
