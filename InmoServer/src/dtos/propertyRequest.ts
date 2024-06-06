@@ -7,10 +7,11 @@ export interface PropertyRequest{
     airConditioning: boolean;
     wifi: boolean;
     garage: boolean;
-    houseOrApartment: Enumerator<number>;
+    houseOrApartment: '1' | '2';
     mtsToTheBeach: number;
+    countryId: string;
     stateOrProvince: string;
     district: string;
     neighborhood: string;
-    images: Array<string>; //TODO: chequear esto
+    images: string[];
 }

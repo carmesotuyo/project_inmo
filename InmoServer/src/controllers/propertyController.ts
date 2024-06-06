@@ -11,10 +11,10 @@ export class PropertyController {
   
     public createProperty = async (req: Request, res: Response) => {
       try {
-        // const propertyDto = plainToClass(PropertyDTO, req.body);
-        // await validateOrReject(propertyDto);
+        // const propertyRequest = plainToClass(propertyRequest, req.body);
+        // await validateOrReject(propertyRequest);
   
-        const property = await this.propertyService.createProperty(req.body); //propertyDto
+        const property = await this.propertyService.createProperty(req.body); //propertyRequest
         this.queueService.addJobToQueue(property.toJSON());
         res.status(201).json(property);
       } catch (error: any) {

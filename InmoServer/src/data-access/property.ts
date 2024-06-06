@@ -1,6 +1,5 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../config/database';
-import { Country } from './country';
 
 export const Property = sequelize.define('Property', {
   id: {
