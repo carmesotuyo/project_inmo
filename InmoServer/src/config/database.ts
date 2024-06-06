@@ -17,9 +17,9 @@ const sequelize = new Sequelize(
   }
 );
 
+import { setRelationships } from "../data-access/relationships";
 import { Property } from "../data-access/property";
 import { Country } from "../data-access/country";
-import './associations'; // Ensure associations are set up
 
 const syncTables = async () => {
   try {
@@ -38,7 +38,7 @@ const syncTables = async () => {
   }
 };
 const dbSync = async () => {
-  // await setRelationships();
+  await setRelationships();
   await syncTables();
 };
 
