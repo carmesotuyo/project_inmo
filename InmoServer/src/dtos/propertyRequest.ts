@@ -1,5 +1,5 @@
-export interface PropertyRequest{
-    name: string; 
+export interface PropertyRequest {
+    name: string;
     numberOfAdults: number;
     numberOfKids: number;
     numberOfDoubleBeds: number;
@@ -13,5 +13,5 @@ export interface PropertyRequest{
     stateOrProvince: string;
     district: string;
     neighborhood: string;
-    images: string[];
-}
+    images: string[]; // Asumiendo que las imágenes son una matriz de URLs
+  }

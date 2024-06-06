@@ -1,7 +1,0 @@
-// src/servicesInterfaces/propertyService.ts
-import { PropertyRequest } from '../dtos/propertyRequest';
-import { Property } from '../data-access/property';
-
-export interface PropertyService {
-  createProperty(data: PropertyRequest): Promise<InstanceType<typeof Property>>;
-}
