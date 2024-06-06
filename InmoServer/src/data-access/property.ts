@@ -56,7 +56,7 @@ export const Property = sequelize.define('Property', {
     allowNull: false
   },
   houseOrApartment: {
-    type: DataTypes.ENUM,
+    type: DataTypes.ENUM('1', '2'),
     allowNull: false,
     validate: {
       isIn: {
@@ -94,11 +94,11 @@ export const Property = sequelize.define('Property', {
     allowNull: false
   },
   images: {
-    type: DataTypes.ARRAY, //TODO chequear esto
+    type: DataTypes.ARRAY(DataTypes.STRING),
     allowNull: false
   },
   status: {
-    type: DataTypes.ENUM,
+    type: DataTypes.ENUM('Pendiente de pago', 'Activo'),
     allowNull: false,
     validate: {
       isIn: {

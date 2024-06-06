@@ -1,7 +1,7 @@
 // src/controllers/propertyController.ts
 import { Request, Response } from 'express';
-import { PropertyService } from '../servicesInterfaces/propertyService';
-import { QueueService } from '../servicesInterfaces/queueService';
+import { PropertyService } from '../interfaces/services/propertyService';
+import { QueueService } from '../interfaces/services/queueService';
 import { getErrorMessage } from '../utils/handleError';
 // import { validateOrReject } from 'class-validator';
 // import { plainToClass } from 'class-transformer';
