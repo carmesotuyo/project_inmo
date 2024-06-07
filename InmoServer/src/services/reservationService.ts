@@ -16,7 +16,7 @@ export class ReservationServiceImpl implements ReservationService {
     if (!property) {
       throw new Error('Propiedad no encontrada');
     }
-    const numberOfAdults = Number(property.get('numberOfAdults')); //Cantidad maxima de Adultos de la propiedad 
+    const numberOfAdults = Number(property.get('numberOfAdults')); //Cantidad maxima de Adultos de la propiedad
     const numberOfKids = Number(property.get('numberOfKids')); //Cantidad maxima de Menores de la propiedad
 
     // Validar cantidad de personas
@@ -24,13 +24,13 @@ export class ReservationServiceImpl implements ReservationService {
     if (adults + children > totalCapacity) {
       throw new Error('La cantidad de personas excede la capacidad del inmueble');
     }
-    
+
     // Validar disponibilidad del inmueble
     const isAvailable = await this.checkAvailability(propertyId, startDate, endDate);
     if (!isAvailable) {
       throw new Error('El inmueble no está disponible para el período solicitado');
     }
-    
+
     // Crear reserva pendiente de aprobación
     const reservationObject = {
       propertyId,
@@ -44,6 +44,15 @@ export class ReservationServiceImpl implements ReservationService {
     //Faltaria agregar que llegue notifiacion al admin para que apruebe la reserva
     return await Reservation.create(reservationObject);
   }
+  async getReservationByEmailAndCode(email: string, reservationCode: string): Promise<InstanceType<typeof Reservation> | null> {
+    const reservation = await Reservation.findOne({
+      where: {
+        reservationCode,
+        'inquilino.email': email,
+      },
+    });
+    return reservation;
+  }
 
   private async checkAvailability(propertyId: number, startDate: string, endDate: string): Promise<boolean> {
     const reservations = await Reservation.findAll({
@@ -52,16 +61,16 @@ export class ReservationServiceImpl implements ReservationService {
         [Op.or]: [
           {
             startDate: {
-              [Op.between]: [startDate, endDate]
+              [Op.between]: [startDate, endDate],
             },
           },
           {
             endDate: {
-              [Op.between]: [startDate, endDate]
+              [Op.between]: [startDate, endDate],
             },
-          }
-        ]
-      }
+          },
+        ],
+      },
     });
 
     return reservations.length === 0;
