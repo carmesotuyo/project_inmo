@@ -94,7 +94,7 @@ export const Property = sequelize.define('Property', {
     allowNull: false
   },
   images: {
-    type: DataTypes.ARRAY(DataTypes.STRING),
+    type: DataTypes.STRING,
     allowNull: false
   },
   status: {

@@ -26,15 +26,12 @@ const syncTables = async () => {
     // Verifica si la sincronización está habilitada
     if (process.env.DB_SYNC === "true") {
       // Cambia 'force' a true si quieres que se borren y recreen las tablas
-      await Property.sync();
       await Country.sync();
+      await Property.sync();
       console.log("Los modelos fueron sincronizados con la base de datos.");
     }
   } catch (error) {
-    console.error(
-      "Error al sincronizar los modelos con la base de datos:",
-      error
-    );
+    console.error("Error al sincronizar los modelos con la base de datos:", error);
   }
 };
 const dbSync = async () => {

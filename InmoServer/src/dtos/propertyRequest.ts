@@ -13,5 +13,5 @@ export interface PropertyRequest {
     stateOrProvince: string;
     district: string;
     neighborhood: string;
-    images: string[]; // Asumiendo que las imágenes son una matriz de URLs
+    images: string;
   }
