@@ -1,4 +1,4 @@
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -11,7 +11,7 @@ export const authConfig = {
   issuerBaseURL: `https://${process.env.AUTH0_DOMAIN}`,
   clientSecret: process.env.AUTH0_CLIENT_SECRET!,
   authorizationParams: {
-    response_type: "code",
-    scope: "openid profile email",
+    response_type: 'code',
+    scope: 'openid profile email',
   },
 };

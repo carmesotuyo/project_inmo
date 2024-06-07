@@ -9,7 +9,7 @@ export class QueueServiceImpl implements QueueService {
       console.log('Data to be added to queue:', data);
       const job = await myQueue.add({
         task: 'sendData',
-        details: { data: data }
+        details: { data: data },
       });
       console.log(`Job added with ID: ${job.id}`);
     } catch (error) {

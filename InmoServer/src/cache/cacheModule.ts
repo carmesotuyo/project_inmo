@@ -6,7 +6,7 @@ class CacheModule {
 
   constructor() {
     this.redisClient = new Redis({
-      host: 'localhost', 
+      host: 'localhost',
       port: 6379,
     });
   }
