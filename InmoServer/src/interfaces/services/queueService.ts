@@ -1,3 +1,3 @@
 export interface QueueService {
-    addJobToQueue(data: JSON): void;
+  addJobToQueue(data: JSON): void;
 }
