@@ -1,4 +1,3 @@
-// src/controllers/propertyController.ts
 import { Request, Response } from 'express';
 import { PropertyService } from '../interfaces/services/propertyService';
 import { QueueService } from '../interfaces/services/queueService';
