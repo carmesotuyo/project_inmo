@@ -15,6 +15,7 @@ const sequelize = new Sequelize(process.env.DB_NAME!, process.env.DB_USER!, proc
 import { setRelationships } from '../data-access/relationships';
 import { Property } from '../data-access/property';
 import { Country } from '../data-access/country';
+import { Reservation } from '../data-access/reservation';
 
 const syncTables = async () => {
   try {
@@ -23,6 +24,7 @@ const syncTables = async () => {
       // Cambia 'force' a true si quieres que se borren y recreen las tablas
       await Country.sync();
       await Property.sync();
+      await Reservation.sync();
       console.log('Los modelos fueron sincronizados con la base de datos.');
     }
   } catch (error) {
