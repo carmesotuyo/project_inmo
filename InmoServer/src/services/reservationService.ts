@@ -47,7 +47,7 @@ export class ReservationServiceImpl implements ReservationService {
   async getReservationByEmailAndCode(email: string, reservationCode: string): Promise<InstanceType<typeof Reservation> | null> {
     const reservation = await Reservation.findOne({
       where: {
-        reservationCode,
+        id: reservationCode,
         'inquilino.email': email,
       },
     });
