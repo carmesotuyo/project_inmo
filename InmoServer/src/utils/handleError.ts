@@ -1,5 +1,3 @@
-// src/utils/handleError.ts
-
 /**
  * Evalúa el error y devuelve un mensaje apropiado.
  * @param error El error capturado en un bloque catch.

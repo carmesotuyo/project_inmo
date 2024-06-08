@@ -41,11 +41,6 @@ export const Reservation = sequelize.define(
       type: DataTypes.JSON,
       allowNull: false,
     },
-    reservationCode: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-    },
   },
   {
     tableName: 'Reservations',
