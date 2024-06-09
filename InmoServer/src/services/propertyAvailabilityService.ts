@@ -36,7 +36,7 @@ export class PropertyAvailabilityServiceImpl implements PropertyAvailabilityServ
       return overlappingAvailability;
     }
 
-    return await availability.update(data);
+    return await availability.update({ ...data });
   }
 
   async getAllAvailabilities(propertyId: number): Promise<InstanceType<typeof PropertyAvailability>[]> {
@@ -79,30 +79,16 @@ export class PropertyAvailabilityServiceImpl implements PropertyAvailabilityServ
     return await PropertyAvailability.findAll({
       where: {
         propertyId: propertyId,
-        [Op.or]: [
+        [Op.and]: [
           {
             startDate: {
-              [Op.between]: [startDate, endDate],
+              [Op.lte]: new Date(endDate), // Check if the start date is before or on the requested end date
             },
           },
           {
             endDate: {
-              [Op.between]: [startDate, endDate],
+              [Op.gte]: new Date(startDate), // Check if the end date is after or on the requested start date
             },
-          },
-          {
-            [Op.and]: [
-              {
-                startDate: {
-                  [Op.lte]: startDate,
-                },
-              },
-              {
-                endDate: {
-                  [Op.gte]: endDate,
-                },
-              },
-            ],
           },
         ],
       },

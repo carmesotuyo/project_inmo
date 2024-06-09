@@ -9,30 +9,16 @@ export async function checkDateOverlap(
   const overlappingEntries = await model.findAll({
     where: {
       propertyId: propertyId,
-      [Op.or]: [
+      [Op.and]: [
         {
           startDate: {
-            [Op.lte]: endDate,
+            [Op.lte]: endDate, // Check if start date is before or on the requested end date
           },
         },
         {
           endDate: {
-            [Op.gte]: startDate,
+            [Op.gte]: startDate, // Check if end date is after or on the requested start date
           },
-        },
-        {
-          [Op.and]: [
-            {
-              startDate: {
-                [Op.lte]: startDate,
-              },
-            },
-            {
-              endDate: {
-                [Op.gte]: endDate,
-              },
-            },
-          ],
         },
       ],
     },
