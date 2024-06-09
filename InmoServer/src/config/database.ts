@@ -16,6 +16,7 @@ import { setRelationships } from '../data-access/relationships';
 import { Property } from '../data-access/property';
 import { Country } from '../data-access/country';
 import { Reservation } from '../data-access/reservation';
+import { PropertyAvailability } from '../data-access/propertyAvailability';
 
 const syncTables = async () => {
   try {
@@ -25,6 +26,7 @@ const syncTables = async () => {
       await Country.sync();
       await Property.sync();
       await Reservation.sync();
+      await PropertyAvailability.sync();
       console.log('Los modelos fueron sincronizados con la base de datos.');
     }
   } catch (error) {
