@@ -13,9 +13,7 @@ export class ReservationServiceImpl implements ReservationService {
 
     // Obtener la propiedad de la base de datos
     const property = await Property.findByPk(propertyId);
-    if (!property) {
-      throw new Error('Propiedad no encontrada');
-    }
+    if (!property) throw new Error('Propiedad no encontrada');
     const numberOfAdults = Number(property.get('numberOfAdults')); //Cantidad maxima de Adultos de la propiedad
     const numberOfKids = Number(property.get('numberOfKids')); //Cantidad maxima de Menores de la propiedad
 

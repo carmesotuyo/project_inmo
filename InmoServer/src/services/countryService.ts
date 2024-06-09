@@ -11,9 +11,7 @@ export class CountryServiceImpl implements CountryService {
 
   async updateCountry(name: string, data: Partial<{ cancellationDays: number; returnPercentage: number }>): Promise<InstanceType<typeof Country> | null> {
     const country = await Country.findByPk(name);
-    if (!country) {
-      throw new Error('Country not found');
-    }
+    if (!country) throw new Error('Country not found');
 
     if (data.cancellationDays !== undefined) {
       country.set('cancellationDays', data.cancellationDays);

@@ -5,6 +5,7 @@ import authRoutes from './routes/auhtRoutes';
 import propertyRoutes from './routes/propertyRoutes';
 import reservationRoutes from './routes/reservationRoutes';
 import countryRoutes from './routes/countryRoutes';
+import propertyAvailabilityRoutes from './routes/propertyAvailabilityRoutes';
 
 const app = express();
 app.use(express.json());
@@ -16,6 +17,7 @@ app.use('/api', authRoutes);
 app.use('/api', propertyRoutes);
 app.use('/api', reservationRoutes);
 app.use('/api', countryRoutes);
+app.use('/api', propertyAvailabilityRoutes);
 
 const main = async () => {
   app.listen(PORT, async () => {
