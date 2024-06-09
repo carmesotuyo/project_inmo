@@ -2,11 +2,11 @@ import { ReservationRequest } from '../dtos/reservationRequest';
 import { Reservation } from '../data-access/reservation';
 import { Property } from '../data-access/property';
 import { ReservationService } from '../interfaces/services/reservationService';
-
-// Importamos el DTO
-import { Op } from 'sequelize';
+import { PropertyAvailabilityService } from '../interfaces/services/propertyAvailabilityService';
 
 export class ReservationServiceImpl implements ReservationService {
+  constructor(private propertyAvailabilityService: PropertyAvailabilityService) {}
+
   async createReservation(data: ReservationRequest): Promise<InstanceType<typeof Reservation>> {
     if (!data) throw Error('Data incorrecta, DTO vacio');
     const { propertyId, adults, children, startDate, endDate, inquilino } = data;
@@ -40,7 +40,9 @@ export class ReservationServiceImpl implements ReservationService {
       inquilino,
     };
     //Faltaria agregar que llegue notifiacion al admin para que apruebe la reserva
-    return await Reservation.create(reservationObject);
+    const reservation = await Reservation.create(reservationObject);
+    await this.adjustPropertyAvailability(propertyId, startDate, endDate);
+    return reservation;
   }
   async getReservationByEmailAndCode(email: string, reservationCode: string): Promise<InstanceType<typeof Reservation> | null> {
     const reservation = await Reservation.findOne({
@@ -53,24 +55,11 @@ export class ReservationServiceImpl implements ReservationService {
   }
 
   private async checkAvailability(propertyId: number, startDate: string, endDate: string): Promise<boolean> {
-    const reservations = await Reservation.findAll({
-      where: {
-        propertyId: propertyId,
-        [Op.or]: [
-          {
-            startDate: {
-              [Op.between]: [startDate, endDate],
-            },
-          },
-          {
-            endDate: {
-              [Op.between]: [startDate, endDate],
-            },
-          },
-        ],
-      },
-    });
+    const availabilities = await this.propertyAvailabilityService.findAvailabilities(propertyId, startDate, endDate);
+    return availabilities.length > 0;
+  }
 
-    return reservations.length === 0;
+  private async adjustPropertyAvailability(propertyId: number, startDate: string, endDate: string): Promise<void> {
+    this.propertyAvailabilityService.adjustPropertyAvailabilityFromReservationDates(propertyId, startDate, endDate);
   }
 }

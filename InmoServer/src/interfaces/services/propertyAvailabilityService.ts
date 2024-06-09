@@ -5,4 +5,6 @@ export interface PropertyAvailabilityService {
   createAvailability(data: PropertyAvailabilityRequest): Promise<InstanceType<typeof PropertyAvailability>>;
   updateAvailability(id: number, data: PropertyAvailabilityRequest): Promise<InstanceType<typeof PropertyAvailability> | null>;
   getAllAvailabilities(propertyId: number): Promise<InstanceType<typeof PropertyAvailability>[]>;
+  findAvailabilities(propertyId: number, startDate: string, endDate: string): Promise<InstanceType<typeof PropertyAvailability>[]>;
+  adjustPropertyAvailabilityFromReservationDates(propertyId: number, startDate: string, endDate: string): Promise<void>;
 }
