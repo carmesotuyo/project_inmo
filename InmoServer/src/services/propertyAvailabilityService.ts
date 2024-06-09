@@ -16,7 +16,6 @@ export class PropertyAvailabilityServiceImpl implements PropertyAvailabilityServ
     const existingAvailability = await this.handleOverlappingAvailabilities(propertyId, startDate, endDate);
     if (existingAvailability) return existingAvailability;
 
-    // If no existing availability fully includes the requested one and there are no overlapping availabilities, create a new availability
     return await PropertyAvailability.create({ ...data });
   }
 
@@ -31,43 +30,46 @@ export class PropertyAvailabilityServiceImpl implements PropertyAvailabilityServ
     if (hasOverlappingReservations) throw new Error('Cannot update availability because there are existing reservations in the requested dates');
 
     const overlappingAvailability = await this.handleOverlappingAvailabilities(propertyId, startDate, endDate);
-    if (overlappingAvailability) {
-      await availability.destroy();
-      return overlappingAvailability;
-    }
+    if (overlappingAvailability) return overlappingAvailability;
 
     return await availability.update({ ...data });
   }
 
   async getAllAvailabilities(propertyId: number): Promise<InstanceType<typeof PropertyAvailability>[]> {
-    return await PropertyAvailability.findAll({ where: { propertyId } });
+    return await PropertyAvailability.findAll({
+      where: { propertyId },
+      order: [['startDate', 'ASC']],
+    });
   }
 
   private async handleOverlappingAvailabilities(propertyId: number, startDate: string, endDate: string): Promise<InstanceType<typeof PropertyAvailability> | null> {
     const overlappingAvailabilities = await this.findAvailabilities(propertyId, startDate, endDate);
 
+    const requestedStartDate = new Date(startDate);
+    const requestedEndDate = new Date(endDate);
+
     if (overlappingAvailabilities.length > 0) {
       for (const availability of overlappingAvailabilities) {
-        const availabilityStartDate = availability.get('startDate') as Date;
-        const availabilityEndDate = availability.get('endDate') as Date;
+        const availabilityStartDate = new Date(availability.get('startDate') as string);
+        const availabilityEndDate = new Date(availability.get('endDate') as string);
 
-        if (new Date(startDate) >= availabilityStartDate && new Date(endDate) <= availabilityEndDate) {
-          // Requested dates are fully included in an existing availability, no need to create new availability
+        if (requestedStartDate >= availabilityStartDate && requestedEndDate <= availabilityEndDate) {
+          // las fechas ya estan disponibles, no hay que hacer nada
           return availability;
-        } else if (new Date(startDate) < availabilityStartDate && new Date(endDate) > availabilityEndDate) {
-          // Requested dates fully overlap with an existing availability, adjust the existing availability
+        } else if (requestedStartDate < availabilityStartDate && requestedEndDate > availabilityEndDate) {
+          // se agranda una disponibilidad existente porque la nueva la abarca completamente
           await availability.update({
             startDate: startDate,
             endDate: endDate,
           });
           return availability;
-        } else if (new Date(startDate) < availabilityStartDate && new Date(endDate) >= availabilityStartDate) {
-          // Requested dates overlap with the start of an existing availability, adjust the start date of the existing availability
-          await availability.update({ startDate: endDate });
+        } else if (requestedStartDate <= availabilityStartDate && requestedEndDate >= availabilityStartDate) {
+          // se agranda la disponibilidad al principio de una disponibilidad existente
+          await availability.update({ startDate: startDate });
           return availability;
-        } else if (new Date(endDate) > availabilityEndDate && new Date(startDate) <= availabilityEndDate) {
-          // Requested dates overlap with the end of an existing availability, adjust the end date of the existing availability
-          await availability.update({ endDate: startDate });
+        } else if (requestedEndDate >= availabilityEndDate && requestedStartDate <= availabilityEndDate) {
+          // se agranda la disponibilidad al final de una disponibilidad existente
+          await availability.update({ endDate: endDate });
           return availability;
         }
       }
@@ -82,12 +84,12 @@ export class PropertyAvailabilityServiceImpl implements PropertyAvailabilityServ
         [Op.and]: [
           {
             startDate: {
-              [Op.lte]: new Date(endDate), // Check if the start date is before or on the requested end date
+              [Op.lte]: new Date(endDate),
             },
           },
           {
             endDate: {
-              [Op.gte]: new Date(startDate), // Check if the end date is after or on the requested start date
+              [Op.gte]: new Date(startDate),
             },
           },
         ],
@@ -113,12 +115,14 @@ export class PropertyAvailabilityServiceImpl implements PropertyAvailabilityServ
 
   async adjustPropertyAvailabilityFromReservationDates(propertyId: number, startDate: string, endDate: string): Promise<void> {
     const availabilities = await this.findAvailabilities(propertyId, startDate, endDate);
+    const requestedStartDate = new Date(startDate);
+    const requestedEndDate = new Date(endDate);
 
     for (const availability of availabilities) {
-      const availabilityStartDate = availability.get('startDate') as Date;
-      const availabilityEndDate = availability.get('endDate') as Date;
+      const availabilityStartDate = new Date(availability.get('startDate') as string);
+      const availabilityEndDate = new Date(availability.get('endDate') as string);
 
-      if (new Date(startDate) > availabilityStartDate && new Date(endDate) < availabilityEndDate) {
+      if (requestedStartDate > availabilityStartDate && requestedEndDate < availabilityEndDate) {
         // La disponilidad se parte en dos nuevas
         await PropertyAvailability.create({
           propertyId,
@@ -131,13 +135,13 @@ export class PropertyAvailabilityServiceImpl implements PropertyAvailabilityServ
           endDate: availability.get('endDate'),
         });
         await availability.destroy();
-      } else if (new Date(startDate) <= availabilityStartDate && new Date(endDate) >= availabilityEndDate) {
+      } else if (requestedStartDate <= availabilityStartDate && requestedEndDate >= availabilityEndDate) {
         // La disponibilidad se ocupa toda, se elimina
         await availability.destroy();
-      } else if (new Date(startDate) > availabilityStartDate && new Date(startDate) < availabilityEndDate) {
+      } else if (requestedStartDate > availabilityStartDate && requestedStartDate < availabilityEndDate) {
         // Se ajusta la fecha final de la disponibilidad
         await availability.update({ endDate: startDate });
-      } else if (new Date(endDate) > availabilityStartDate && new Date(endDate) < availabilityEndDate) {
+      } else if (requestedEndDate > availabilityStartDate && requestedEndDate < availabilityEndDate) {
         // Se ajusta la fecha inicial de la disponibilidad
         await availability.update({ startDate: endDate });
       }

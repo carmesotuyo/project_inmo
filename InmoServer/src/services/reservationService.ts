@@ -35,7 +35,7 @@ export class ReservationServiceImpl implements ReservationService {
     };
     //Faltaria agregar que llegue notifiacion al admin para que apruebe la reserva
     const reservation = await Reservation.create(reservationObject);
-    await this.adjustPropertyAvailability(propertyId, startDate, endDate);
+    this.propertyAvailabilityService.adjustPropertyAvailabilityFromReservationDates(propertyId, startDate, endDate);
     return reservation;
   }
 
@@ -55,10 +55,6 @@ export class ReservationServiceImpl implements ReservationService {
 
     const hasAvailableDates = await this.propertyAvailabilityService.checkAvailability(propertyId, startDate, endDate);
     return hasAvailableDates;
-  }
-
-  private async adjustPropertyAvailability(propertyId: number, startDate: string, endDate: string): Promise<void> {
-    this.propertyAvailabilityService.adjustPropertyAvailabilityFromReservationDates(propertyId, startDate, endDate);
   }
 
   private async validatePropertyCapacity(property: InstanceType<typeof Property>, adults: number, children: number): Promise<boolean> {
