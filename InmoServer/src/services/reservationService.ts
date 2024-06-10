@@ -5,6 +5,7 @@ import { ReservationService } from '../interfaces/services/reservationService';
 import { PropertyAvailabilityService } from '../interfaces/services/propertyAvailabilityService';
 import { checkDateOverlap } from '../utils/dateUtils';
 import { CountryService } from '../interfaces/services/countryService';
+import { PropertyService } from '../interfaces/services/propertyService';
 // Importamos el DTO
 import { Op } from 'sequelize';
 
@@ -12,6 +13,7 @@ export class ReservationServiceImpl implements ReservationService {
   constructor(
     private propertyAvailabilityService: PropertyAvailabilityService,
     private countryService: CountryService,
+    private propertyService: PropertyService,
   ) {}
   async createReservation(data: ReservationRequest): Promise<InstanceType<typeof Reservation>> {
     if (!data) throw Error('Data incorrecta, DTO vacio');
@@ -28,6 +30,11 @@ export class ReservationServiceImpl implements ReservationService {
     const isAvailable = await this.checkAvailability(propertyId, startDate, endDate);
     if (!isAvailable) throw new Error('El inmueble no está disponible para el período solicitado');
 
+    const pricePerNight = property.get('pricePerNight') as number;
+    const start = new Date(startDate); // Convertir startDate a Date
+    const end = new Date(endDate); // Convertir endDate a Date
+    const numberOfNights = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+
     // Crear reserva pendiente de aprobación
     const reservationObject = {
       propertyId,
@@ -37,6 +44,7 @@ export class ReservationServiceImpl implements ReservationService {
       adults,
       children,
       inquilino,
+      amountPaid: pricePerNight * numberOfNights,
     };
     //Faltaria agregar que llegue notifiacion al admin para que apruebe la reserva
     const reservation = await Reservation.create(reservationObject);
@@ -63,21 +71,30 @@ export class ReservationServiceImpl implements ReservationService {
     // Calcular los días de anticipación y el porcentaje de reembolso según el país
     const startDate = reservation.get('startDate') as Date;
     const daysBeforeStart = Math.ceil((startDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+    const propertyId = reservation.get('propertyId') as number;
+    const property = await this.propertyService.getPropertyByID(propertyId);
+    const { refundDays, refundPercentage } = await this.countryService.getRefundPolicyByCountry(property.get('country') as string);
 
-    const { refundDays, refundPercentage } = await this.getRefundPolicyByCountry(country);
-    reservation.set('status', 'Cancelled by Tenant');
+    let refundAmount = 0;
     if (daysBeforeStart > refundDays) {
-      // Cancelación completa
       reservation.set('status', 'Cancelled by Tenant');
-      // Lógica para reembolso completo
+      const paid = reservation.get('amountPaid') as number;
+      refundAmount = paid;
     } else {
       // Cancelación parcial
+      const paid = reservation.get('amountPaid') as number;
       reservation.set('status', 'Cancelled by Tenant');
+      refundAmount = paid * (refundPercentage / 100);
       // Lógica para reembolso parcial
     }
-
+    await this.processRefund(reservation.get('inquilino.email') as string, refundAmount);
     await reservation.save();
     return reservation;
+  }
+  // Método ficticio para procesar el reembolso a través del sistema de pagos
+  private async processRefund(email: string, amount: number): Promise<void> {
+    // Aquí iría la lógica para interactuar con el sistema de pagos y procesar el reembolso
+    console.log(`Procesando reembolso de ${amount} para ${email}`);
   }
 
   private async checkAvailability(propertyId: number, startDate: string, endDate: string): Promise<boolean> {

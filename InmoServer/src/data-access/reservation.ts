@@ -41,6 +41,10 @@ export const Reservation = sequelize.define(
       type: DataTypes.JSON,
       allowNull: false,
     },
+    amountPaid: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
   },
   {
     tableName: 'Reservations',
