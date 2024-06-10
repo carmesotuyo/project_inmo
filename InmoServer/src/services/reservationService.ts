@@ -54,6 +54,38 @@ export class ReservationServiceImpl implements ReservationService {
     return reservation;
   }
 
+  async cancelReservation(email: string, reservationCode: string): Promise<InstanceType<typeof Reservation> | null> {
+    const reservation = await this.getReservationByEmailAndCode(email, reservationCode);
+
+    if (!reservation) {
+      throw new Error('Reserva no encontrada');
+    }
+
+    // Calcular los días de anticipación y el porcentaje de reembolso según el país
+    // const startDate = reservation.get('startDate') as Date;
+    // const daysBeforeStart = Math.ceil((startDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+
+    // const { refundDays, refundPercentage } = await this.getRefundPolicyByCountry(country);
+    reservation.set('status', 4);
+    // if (daysBeforeStart > refundDays) {
+    //   // Cancelación completa
+    //   reservation.set('status', 'Cancelled by Tenant');
+    //   // Lógica para reembolso completo
+    // } else {
+    //   // Cancelación parcial
+    //   reservation.set('status', 'Cancelled by Tenant');
+    //   // Lógica para reembolso parcial
+    // }
+
+    await reservation.save();
+    return reservation;
+  }
+  //   private async getRefundPolicyByCountry(country: string): Promise<{ refundDays: number, refundPercentage: number }> {
+  //   // Obtener la política de reembolso según el país desde la base de datos o una configuración
+  //   // Ejemplo:
+  //   return { refundDays: 30, refundPercentage: 50 }; // Valores predeterminados
+  // }
+
   private async checkAvailability(propertyId: number, startDate: string, endDate: string): Promise<boolean> {
     const reservations = await Reservation.findAll({
       where: {
