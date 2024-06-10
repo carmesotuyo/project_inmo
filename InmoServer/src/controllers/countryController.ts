@@ -32,6 +32,7 @@ export class CountryController {
         return res.status(404).json({ message: 'Country not found' });
       }
 
+      this.queueService.addJobToQueue(updatedCountry.toJSON());
       res.status(200).json(updatedCountry);
     } catch (error: any) {
       res.status(400).json({
