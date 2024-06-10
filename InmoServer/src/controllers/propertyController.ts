@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { PropertyService } from '../interfaces/services/propertyService';
 import { QueueService } from '../interfaces/services/queueService';
 import { getErrorMessage } from '../utils/handleError';
+import { PropertyFilterOptions } from '../utils/filters';
 // import { validateOrReject } from 'class-validator';
 // import { plainToClass } from 'class-transformer';
 
@@ -26,4 +27,18 @@ export class PropertyController {
       });
     }
   };
+  async searchProperties(req: Request, res: Response): Promise<void> {
+    try {
+      const filters: PropertyFilterOptions = req.query as unknown as PropertyFilterOptions;
+
+      const result = await this.propertyService.searchProperties(filters);
+
+      res.status(200).json(result);
+    } catch (error: any) {
+      res.status(400).json({
+        message: 'Error searching property',
+        error: getErrorMessage(error),
+      });
+    }
+  }
 }
