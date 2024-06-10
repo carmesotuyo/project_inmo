@@ -12,8 +12,8 @@ import { PropertyAvailabilityServiceImpl } from '../services/propertyAvailabilit
 const queueService = new QueueServiceImpl();
 const propertyService = new PropertyServiceImpl();
 const propertyAvailabilityService = new PropertyAvailabilityServiceImpl();
-const reservationService = new ReservationServiceImpl(propertyAvailabilityService);
 const countryService = new CountryServiceImpl();
+const reservationService = new ReservationServiceImpl(propertyAvailabilityService, countryService, propertyService);
 
 // Instanciar el controlador con las implementaciones concretas de los servicios
 export const propertyController = new PropertyController(propertyService, queueService);
