@@ -42,7 +42,7 @@ export const Reservation = sequelize.define(
       allowNull: false,
     },
     amountPaid: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.FLOAT,
       allowNull: false,
     },
   },

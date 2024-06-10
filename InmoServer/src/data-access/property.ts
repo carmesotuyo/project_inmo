@@ -100,7 +100,7 @@ export const Property = sequelize.define(
       allowNull: false,
     },
     pricePerNight: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.FLOAT,
       allowNull: false,
     },
     status: {
