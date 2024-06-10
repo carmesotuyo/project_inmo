@@ -4,10 +4,15 @@ import { Property } from '../data-access/property';
 import { ReservationService } from '../interfaces/services/reservationService';
 import { PropertyAvailabilityService } from '../interfaces/services/propertyAvailabilityService';
 import { checkDateOverlap } from '../utils/dateUtils';
+import { CountryService } from '../interfaces/services/countryService';
+// Importamos el DTO
+import { Op } from 'sequelize';
 
 export class ReservationServiceImpl implements ReservationService {
-  constructor(private propertyAvailabilityService: PropertyAvailabilityService) {}
-
+  constructor(
+    private propertyAvailabilityService: PropertyAvailabilityService,
+    private countryService: CountryService,
+  ) {}
   async createReservation(data: ReservationRequest): Promise<InstanceType<typeof Reservation>> {
     if (!data) throw Error('Data incorrecta, DTO vacio');
     const { propertyId, adults, children, startDate, endDate, inquilino } = data;
@@ -38,7 +43,6 @@ export class ReservationServiceImpl implements ReservationService {
     this.propertyAvailabilityService.adjustPropertyAvailabilityFromReservationDates(propertyId, startDate, endDate);
     return reservation;
   }
-
   async getReservationByEmailAndCode(email: string, reservationCode: string): Promise<InstanceType<typeof Reservation> | null> {
     const reservation = await Reservation.findOne({
       where: {
@@ -57,29 +61,24 @@ export class ReservationServiceImpl implements ReservationService {
     }
 
     // Calcular los días de anticipación y el porcentaje de reembolso según el país
-    // const startDate = reservation.get('startDate') as Date;
-    // const daysBeforeStart = Math.ceil((startDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+    const startDate = reservation.get('startDate') as Date;
+    const daysBeforeStart = Math.ceil((startDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
 
-    // const { refundDays, refundPercentage } = await this.getRefundPolicyByCountry(country);
-    reservation.set('status', 4);
-    // if (daysBeforeStart > refundDays) {
-    //   // Cancelación completa
-    //   reservation.set('status', 'Cancelled by Tenant');
-    //   // Lógica para reembolso completo
-    // } else {
-    //   // Cancelación parcial
-    //   reservation.set('status', 'Cancelled by Tenant');
-    //   // Lógica para reembolso parcial
-    // }
+    const { refundDays, refundPercentage } = await this.getRefundPolicyByCountry(country);
+    reservation.set('status', 'Cancelled by Tenant');
+    if (daysBeforeStart > refundDays) {
+      // Cancelación completa
+      reservation.set('status', 'Cancelled by Tenant');
+      // Lógica para reembolso completo
+    } else {
+      // Cancelación parcial
+      reservation.set('status', 'Cancelled by Tenant');
+      // Lógica para reembolso parcial
+    }
 
     await reservation.save();
     return reservation;
   }
-  //   private async getRefundPolicyByCountry(country: string): Promise<{ refundDays: number, refundPercentage: number }> {
-  //   // Obtener la política de reembolso según el país desde la base de datos o una configuración
-  //   // Ejemplo:
-  //   return { refundDays: 30, refundPercentage: 50 }; // Valores predeterminados
-  // }
 
   private async checkAvailability(propertyId: number, startDate: string, endDate: string): Promise<boolean> {
     const hasOverlappingReservations = await checkDateOverlap(Reservation, propertyId, startDate, endDate);

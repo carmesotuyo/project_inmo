@@ -24,4 +24,10 @@ export class CountryServiceImpl implements CountryService {
     await country.save();
     return country;
   }
+  async getRefundPolicyByCountry(countryName: string): Promise<{ refundDays: number; refundPercentage: number }> {
+    const country = await Country.findByPk(countryName);
+    if (!country) throw new Error('Pais no encontrado');
+
+    return { refundDays: 30, refundPercentage: 50 }; // Valores predeterminados
+  }
 }
