@@ -17,6 +17,8 @@ import { Property } from '../data-access/property';
 import { Country } from '../data-access/country';
 import { Reservation } from '../data-access/reservation';
 import { PropertyAvailability } from '../data-access/propertyAvailability';
+import { Sensor } from '../data-access/sensor';
+import { SensorServiceType } from '../data-access/sensorServiceType';
 
 const syncTables = async () => {
   try {
@@ -27,6 +29,8 @@ const syncTables = async () => {
       await Property.sync();
       await Reservation.sync();
       await PropertyAvailability.sync();
+      await SensorServiceType.sync();
+      await Sensor.sync();
       console.log('Los modelos fueron sincronizados con la base de datos.');
     }
   } catch (error) {
