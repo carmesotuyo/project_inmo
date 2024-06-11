@@ -16,7 +16,7 @@ export class ServiceTypeController {
       res.status(201).json(serviceType);
     } catch (error) {
       res.status(400).json({
-        message: 'Error creating sensor',
+        message: 'Error creating sensor service type',
         error: getErrorMessage(error),
       });
     }

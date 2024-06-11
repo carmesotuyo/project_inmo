@@ -1,14 +1,16 @@
 import { SensorRequest } from '../dtos/sensorRequest';
 import { Sensor } from '../data-access/sensor';
 import { SensorService } from '../interfaces/services/sensorService';
-import { SensorServiceType } from '../data-access/sensorServiceType';
+import { ServiceTypeService } from '../interfaces/services/sensorServiceType';
 
 export class SensorServiceImpl implements SensorService {
+  constructor(private serviceTypeService: ServiceTypeService) {}
+
   async createSensor(data: SensorRequest): Promise<InstanceType<typeof Sensor>> {
     if (!data) throw Error('Data incorrecta, DTO vacio');
 
     const { serviceTypeId } = data;
-    const serviceType = await SensorServiceType.findByPk(serviceTypeId);
+    const serviceType = await this.serviceTypeService.getServiceType(serviceTypeId as number);
     if (!serviceType) throw new Error('Invalid service type');
 
     return await Sensor.create({ ...data });

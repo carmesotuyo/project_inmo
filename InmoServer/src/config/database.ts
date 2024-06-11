@@ -27,10 +27,10 @@ const syncTables = async () => {
       // Cambia 'force' a true si quieres que se borren y recreen las tablas
       await Country.sync();
       await Property.sync();
-      await Reservation.sync();
-      await PropertyAvailability.sync();
       await SensorServiceType.sync();
       await Sensor.sync();
+      await Reservation.sync();
+      await PropertyAvailability.sync();
       console.log('Los modelos fueron sincronizados con la base de datos.');
     }
   } catch (error) {

@@ -5,6 +5,10 @@ import { SensorServiceType } from '../data-access/sensorServiceType';
 export class ServiceTypeServiceImpl implements ServiceTypeService {
   async createServiceType(data: ServiceTypeRequest): Promise<InstanceType<typeof SensorServiceType>> {
     if (!data) throw Error('Data incorrecta, DTO vacio');
-    return await SensorServiceType.create({ data });
+    const { type } = data;
+    return await SensorServiceType.create({ type });
+  }
+  async getServiceType(id: number): Promise<InstanceType<typeof SensorServiceType> | null> {
+    return SensorServiceType.findByPk(id);
   }
 }

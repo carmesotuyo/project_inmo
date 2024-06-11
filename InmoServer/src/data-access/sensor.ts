@@ -62,7 +62,15 @@ export const Sensor = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'SensorServiceType',
+        model: 'ServiceTypes',
+        key: 'id',
+      },
+    },
+    propertyId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'Properties',
         key: 'id',
       },
     },
@@ -77,13 +85,9 @@ export const Sensor = sequelize.define(
         },
       },
     },
-    propertyId: {
-      type: DataTypes.NUMBER,
-      allowNull: true,
-    },
   },
   {
-    tableName: 'Reservations',
+    tableName: 'Sensors',
     timestamps: true,
   },
 );
