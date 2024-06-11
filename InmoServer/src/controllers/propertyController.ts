@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { PropertyService } from '../interfaces/services/propertyService';
 import { QueueService } from '../interfaces/services/queueService';
 import { getErrorMessage } from '../utils/handleError';
-import { PropertyFilterOptions } from '../utils/filters';
+import { PropertyFilterOptions } from '../utils/propertyFilters';
 // import { validateOrReject } from 'class-validator';
 // import { plainToClass } from 'class-transformer';
 

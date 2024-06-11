@@ -3,8 +3,8 @@ import { Property } from '../data-access/property';
 import { PropertyService } from '../interfaces/services/propertyService';
 import { Model } from 'sequelize';
 import { Reservation } from '../data-access/reservation';
-import { PropertyFilterOptions } from '../utils/filters';
-import { PropertyFilter } from '../utils/filters';
+import { PropertyFilterOptions } from '../utils/propertyFilters';
+import { PropertyFilter } from '../utils/propertyFilters';
 export class PropertyServiceImpl implements PropertyService {
   async getPropertyByID(id: number): Promise<InstanceType<typeof Property>> {
     const property = await Property.findByPk(id);

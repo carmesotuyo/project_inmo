@@ -65,4 +65,17 @@ export class ReservationController {
       });
     }
   };
+  public getReservationsAdmin = async (req: Request, res: Response) => {
+    try {
+      const filters = req.query;
+      const reservations = await this.reservationService.getReservationsAdmin(filters);
+
+      res.status(200).json(reservations);
+    } catch (error: any) {
+      res.status(500).json({
+        message: 'Error consultando las reservas',
+        error: getErrorMessage(error),
+      });
+    }
+  };
 }
