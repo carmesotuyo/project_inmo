@@ -49,7 +49,7 @@ export const User = sequelize.define('User', {
     },
   },
   role: {
-    type: DataTypes.ENUM('Administrador', 'Operario', 'Propietario'),
+    type: DataTypes.ENUM('Administrador', 'Operario', 'Propietario', 'Inquilino'),
     allowNull: false,
   },
   auth0_id: {
