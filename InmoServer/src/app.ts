@@ -6,6 +6,8 @@ import propertyRoutes from './routes/propertyRoutes';
 import reservationRoutes from './routes/reservationRoutes';
 import countryRoutes from './routes/countryRoutes';
 import propertyAvailabilityRoutes from './routes/propertyAvailabilityRoutes';
+import sensorRoutes from './routes/sensorRoutes';
+import serviceTypeRoutes from './routes/serviceTypeRoutes';
 
 const app = express();
 app.use(express.json());
@@ -18,6 +20,8 @@ app.use('/api', propertyRoutes);
 app.use('/api', reservationRoutes);
 app.use('/api', countryRoutes);
 app.use('/api', propertyAvailabilityRoutes);
+app.use('/api', sensorRoutes);
+app.use('/api', serviceTypeRoutes);
 
 const main = async () => {
   app.listen(PORT, async () => {
