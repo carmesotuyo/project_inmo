@@ -24,9 +24,9 @@ export class SensorController {
 
   async assignToProperty(req: Request, res: Response): Promise<void> {
     try {
-      const { propertyId } = req.body;
-      const { id: sensorId } = req.params;
-      await this.sensorService.assignToProperty(sensorId, propertyId);
+      const { sensorId, propertyId } = req.body;
+      const propertySensor = await this.sensorService.assignToProperty(sensorId, propertyId);
+      this.queueService.addJobToQueue(propertySensor.toJSON());
       res.status(200).json({ message: 'Sensor assigned to property successfully' });
     } catch (error) {
       res.status(400).json({

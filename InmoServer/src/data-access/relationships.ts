@@ -4,6 +4,7 @@ import { PropertyAvailability } from './propertyAvailability';
 import { Reservation } from './reservation';
 import { Sensor } from './sensor';
 import { SensorServiceType } from './sensorServiceType';
+import { PropertySensor } from './propertySensor';
 
 export const setRelationships = async () => {
   Property.belongsTo(Country, { foreignKey: 'countryId' });
@@ -15,4 +16,6 @@ export const setRelationships = async () => {
   Property.hasMany(Sensor, { foreignKey: 'propertyId' });
   Sensor.belongsTo(SensorServiceType, { foreignKey: 'serviceTypeId' });
   SensorServiceType.hasMany(Sensor, { foreignKey: 'serviceTypeId' });
+  Property.belongsToMany(Sensor, { through: PropertySensor, foreignKey: 'propertyId' });
+  Sensor.belongsToMany(Property, { through: PropertySensor, foreignKey: 'sensorId' });
 };

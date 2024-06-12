@@ -8,4 +8,7 @@ export class PropertyServiceImpl implements PropertyService {
     const propertyObject = { ...data, status: 'Pendiente de pago' };
     return await Property.create(propertyObject);
   }
+  async existsProperty(id: number): Promise<boolean> {
+    return (await Property.findByPk(id)) != null;
+  }
 }

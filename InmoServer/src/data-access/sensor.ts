@@ -66,19 +66,11 @@ export const Sensor = sequelize.define(
         key: 'id',
       },
     },
-    propertyId: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: 'Properties',
-        key: 'id',
-      },
-    },
     observableProperties: {
       type: DataTypes.JSON,
       allowNull: false,
       validate: {
-        isLongEnough(value: JSON) {
+        isTooLong(value: JSON) {
           if (JSON.stringify(value).length > 1000) {
             throw new Error('Properties JSON must be no longer than 1000 characters');
           }

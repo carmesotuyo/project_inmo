@@ -19,7 +19,7 @@ const propertyAvailabilityService = new PropertyAvailabilityServiceImpl();
 const reservationService = new ReservationServiceImpl(propertyAvailabilityService);
 const countryService = new CountryServiceImpl();
 const serviceTypeService = new ServiceTypeServiceImpl();
-const sensorService = new SensorServiceImpl(serviceTypeService);
+const sensorService = new SensorServiceImpl(serviceTypeService, propertyService);
 
 // Instanciar el controlador con las implementaciones concretas de los servicios
 export const propertyController = new PropertyController(propertyService, queueService);
