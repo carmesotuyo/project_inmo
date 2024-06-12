@@ -12,8 +12,6 @@ export const setRelationships = async () => {
   Reservation.belongsTo(Property, { foreignKey: 'propertyId' });
   Property.hasMany(PropertyAvailability, { foreignKey: 'propertyId' });
   PropertyAvailability.belongsTo(Property, { foreignKey: 'propertyId' });
-  Sensor.belongsTo(Property, { foreignKey: 'propertyId' });
-  Property.hasMany(Sensor, { foreignKey: 'propertyId' });
   Sensor.belongsTo(SensorServiceType, { foreignKey: 'serviceTypeId' });
   SensorServiceType.hasMany(Sensor, { foreignKey: 'serviceTypeId' });
   Property.belongsToMany(Sensor, { through: PropertySensor, foreignKey: 'propertyId' });
