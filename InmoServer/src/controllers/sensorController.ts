@@ -35,4 +35,32 @@ export class SensorController {
       });
     }
   }
+
+  async getObservableProperties(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const observableProperties = await this.sensorService.getObservableProperties(id);
+      this.queueService.addJobToQueue(observableProperties);
+      res.status(200).json({ message: observableProperties });
+    } catch (error) {
+      res.status(400).json({
+        message: 'Error updating sensor',
+        error: getErrorMessage(error),
+      });
+    }
+  }
+
+  async updateSensor(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const updatedSensor = await this.sensorService.updateSensor(id, req.body);
+      this.queueService.addJobToQueue(updatedSensor.toJSON());
+      res.status(200).json({ message: updatedSensor });
+    } catch (error) {
+      res.status(400).json({
+        message: 'Error updating sensor',
+        error: getErrorMessage(error),
+      });
+    }
+  }
 }

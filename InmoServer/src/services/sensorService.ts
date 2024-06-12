@@ -1,4 +1,4 @@
-import { SensorRequest } from '../dtos/sensorRequest';
+import { SensorRequest, SensorUpdateRequest } from '../dtos/sensorRequest';
 import { Sensor } from '../data-access/sensor';
 import { PropertySensor } from '../data-access/propertySensor';
 
@@ -23,10 +23,25 @@ export class SensorServiceImpl implements SensorService {
   }
 
   async assignToProperty(sensorId: string, propertyId: number): Promise<InstanceType<typeof PropertySensor>> {
+    await this.getSensor(sensorId);
+    if (!(await this.propertyService.existsProperty(propertyId))) throw new Error('Property not found');
+    return await PropertySensor.create({ sensorId, propertyId });
+  }
+
+  async getObservableProperties(sensorId: string): Promise<JSON> {
+    const sensor = await this.getSensor(sensorId);
+    const observableProperties = sensor.get('observableProperties') as JSON;
+    if (!observableProperties) throw new Error('Observable properties not defined');
+    return observableProperties;
+  }
+  async updateSensor(sensorId: string, data: SensorUpdateRequest): Promise<InstanceType<typeof Sensor>> {
+    const sensor = await this.getSensor(sensorId);
+    return await sensor.update(data);
+  }
+
+  async getSensor(sensorId: string): Promise<InstanceType<typeof Sensor>> {
     const sensor = await Sensor.findByPk(sensorId);
     if (!sensor) throw new Error('Sensor not found');
-    const existsProperty = await this.propertyService.existsProperty(propertyId);
-    if (!existsProperty) throw new Error('Property not found');
-    return await PropertySensor.create({ sensorId, propertyId });
+    return sensor;
   }
 }
