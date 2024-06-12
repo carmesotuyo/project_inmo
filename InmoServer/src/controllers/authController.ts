@@ -16,7 +16,9 @@ export const login = async (req: Request, res: Response) => {
       scope: 'openid profile email',
     });
 
+    // me guardo el mail para hacer algo
     res.json(tokenResponse.data);
+
   } catch (error: any) {
     console.error('Error during login request:', error.response ? error.response.data : error.message);
     res.status(500).json({ error: error.response ? error.response.data : error.message });
