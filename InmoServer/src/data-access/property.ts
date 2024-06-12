@@ -99,6 +99,10 @@ export const Property = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    pricePerNight: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+    },
     status: {
       type: DataTypes.ENUM('Pendiente de pago', 'Activo'),
       allowNull: false,

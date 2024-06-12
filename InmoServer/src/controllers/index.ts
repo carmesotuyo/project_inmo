@@ -16,8 +16,8 @@ import { ServiceTypeServiceImpl } from '../services/sensorServiceTypeService';
 const queueService = new QueueServiceImpl();
 const propertyService = new PropertyServiceImpl();
 const propertyAvailabilityService = new PropertyAvailabilityServiceImpl();
-const reservationService = new ReservationServiceImpl(propertyAvailabilityService);
 const countryService = new CountryServiceImpl();
+const reservationService = new ReservationServiceImpl(propertyAvailabilityService, countryService, propertyService);
 const serviceTypeService = new ServiceTypeServiceImpl();
 const sensorService = new SensorServiceImpl(serviceTypeService, propertyService);
 

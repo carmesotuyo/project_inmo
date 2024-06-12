@@ -26,7 +26,7 @@ export const Reservation = sequelize.define(
       allowNull: false,
     },
     status: {
-      type: DataTypes.ENUM('Pending Approval', 'Approved', 'Rejected'),
+      type: DataTypes.ENUM('Pending Approval', 'Approved', 'Rejected', 'Cancelled by Tenant'),
       allowNull: false,
     },
     adults: {
@@ -39,6 +39,10 @@ export const Reservation = sequelize.define(
     },
     inquilino: {
       type: DataTypes.JSON,
+      allowNull: false,
+    },
+    amountPaid: {
+      type: DataTypes.FLOAT,
       allowNull: false,
     },
   },

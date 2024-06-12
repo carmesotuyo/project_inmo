@@ -34,7 +34,7 @@ export class ReservationController {
       const reservation = await this.reservationService.getReservationByEmailAndCode(email as string, reservationCode as string);
 
       if (!reservation) {
-        res.status(408).json({ message: 'Reserva no encontrada' });
+        res.status(404).json({ message: 'Reserva no encontrada' });
         return;
       }
 
@@ -42,6 +42,25 @@ export class ReservationController {
     } catch (error: any) {
       res.status(500).json({
         message: 'Error consultando la reserva',
+        error: getErrorMessage(error),
+      });
+    }
+  };
+  public cancelReservation = async (req: Request, res: Response) => {
+    try {
+      const { email, reservationCode } = req.body;
+
+      if (!email || !reservationCode) {
+        res.status(400).json({ message: 'Email y código de reserva son requeridos' });
+        return;
+      }
+
+      const reservation = await this.reservationService.cancelReservation(email, reservationCode);
+
+      res.status(200).json(reservation);
+    } catch (error: any) {
+      res.status(400).json({
+        message: 'Error cancelando la reserva',
         error: getErrorMessage(error),
       });
     }
