@@ -23,23 +23,5 @@ export class UserService  {
             throw new Error('User not found');
           }
         return users;
-    }
-
-    // async updateUser(email: string, data: UserRequest): Promise<InstanceType<typeof User>> {
-    //     const user = await User.findByPk(email);
-    //     if (!user) {
-    //       throw new Error('User not found');
-    //     }
-    //     return await user.update(data);
-    // }
-
-    // async deleteUser(email: string): Promise<void> {
-    //     const user = await User.findByPk(email);
-    //     if (!user) {
-    //       throw new Error('User not found');
-    //     }
-    //     await user.destroy();
-    // }
-    
-    
+    }     
   }
