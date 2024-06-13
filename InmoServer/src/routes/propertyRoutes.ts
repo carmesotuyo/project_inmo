@@ -5,7 +5,6 @@ import { propertyController } from '../controllers';
 const router = Router();
 
 router.post('/properties', propertyController.createProperty);
-// router.get('/matches/:codigoUnicoDeMatch', matchController.getMatchById);
 router.get('/properties/search', (req, res) => propertyController.searchProperties(req, res));
 
 export default router;
