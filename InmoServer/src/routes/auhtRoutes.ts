@@ -1,9 +1,10 @@
 import { Router } from 'express';
 import { auth } from 'express-openid-connect';
-import { login, callback } from '../controllers/authController';
+import { authController } from '../controllers';
 import { authConfig } from '../config/authConfig';
 
 const router = Router();
+const { login, callback } = authController;
 
 router.use(auth(authConfig));
 router.post('/login', login);
