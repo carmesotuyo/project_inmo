@@ -1,7 +1,6 @@
 import { PropertyRequest } from '../dtos/propertyRequest';
 import { Property } from '../data-access/property';
 import { PropertyService } from '../interfaces/services/propertyService';
-import { Model } from 'sequelize';
 
 export class PropertyServiceImpl implements PropertyService {
   async getPropertyByID(id: number): Promise<InstanceType<typeof Property>> {
@@ -13,5 +12,8 @@ export class PropertyServiceImpl implements PropertyService {
     if (!data) throw Error('Data incorrecta, DTO vacio');
     const propertyObject = { ...data, status: 'Pendiente de pago' };
     return await Property.create(propertyObject);
+  }
+  async existsProperty(id: number): Promise<boolean> {
+    return (await Property.findByPk(id)) != null;
   }
 }

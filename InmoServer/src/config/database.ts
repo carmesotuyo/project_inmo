@@ -18,6 +18,9 @@ import { Country } from '../data-access/country';
 import { Reservation } from '../data-access/reservation';
 import { PropertyAvailability } from '../data-access/propertyAvailability';
 import { User } from '../data-access/user';
+import { Sensor } from '../data-access/sensor';
+import { SensorServiceType } from '../data-access/sensorServiceType';
+import { PropertySensor } from '../data-access/propertySensor';
 
 const syncTables = async () => {
   try {
@@ -26,9 +29,12 @@ const syncTables = async () => {
       // Cambia 'force' a true si quieres que se borren y recreen las tablas
       await Country.sync();
       await Property.sync();
+      await SensorServiceType.sync();
+      await Sensor.sync();
       await Reservation.sync();
       await PropertyAvailability.sync();
       await User.sync();
+      await PropertySensor.sync();
       console.log('Los modelos fueron sincronizados con la base de datos.');
     }
   } catch (error) {
