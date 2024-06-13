@@ -6,6 +6,7 @@ import { Reservation } from '../data-access/reservation';
 import { PropertyAvailability } from '../data-access/propertyAvailability';
 import { PropertyFilterOptions } from '../utils/propertyFilters';
 import { PropertyFilter } from '../utils/propertyFilters';
+
 export class PropertyServiceImpl implements PropertyService {
   async getPropertyByID(id: number): Promise<InstanceType<typeof Property>> {
     const property = await Property.findByPk(id);
@@ -82,5 +83,8 @@ export class PropertyServiceImpl implements PropertyService {
     if (!data) throw Error('Data incorrecta, DTO vacio');
     const propertyObject = { ...data, status: 'Pendiente de pago' };
     return await Property.create(propertyObject);
+  }
+  async existsProperty(id: number): Promise<boolean> {
+    return (await Property.findByPk(id)) != null;
   }
 }

@@ -1,6 +1,5 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../config/database';
-import { Property } from './property';
 
 export const PropertyAvailability = sequelize.define(
   'PropertyAvailability',
@@ -13,7 +12,7 @@ export const PropertyAvailability = sequelize.define(
     propertyId: {
       type: DataTypes.INTEGER,
       references: {
-        model: Property,
+        model: 'Properties',
         key: 'id',
       },
       allowNull: false,
