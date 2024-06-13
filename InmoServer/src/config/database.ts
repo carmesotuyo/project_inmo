@@ -12,12 +12,12 @@ const sequelize = new Sequelize(process.env.DB_NAME!, process.env.DB_USER!, proc
   },
 });
 
+import { User } from '../data-access/user';
 import { setRelationships } from '../data-access/relationships';
 import { Property } from '../data-access/property';
 import { Country } from '../data-access/country';
 import { Reservation } from '../data-access/reservation';
 import { PropertyAvailability } from '../data-access/propertyAvailability';
-import { User } from '../data-access/user';
 import { Sensor } from '../data-access/sensor';
 import { SensorServiceType } from '../data-access/sensorServiceType';
 import { PropertySensor } from '../data-access/propertySensor';
