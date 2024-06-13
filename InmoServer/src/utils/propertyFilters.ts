@@ -3,16 +3,16 @@ import { Op } from 'sequelize';
 export interface PropertyFilterOptions {
   startDate?: string;
   endDate?: string;
-  adults?: number;
-  children?: number;
-  doubleBeds?: number;
-  singleBeds?: number;
+  numberOfAdults?: number | string;
+  numberOfKids?: number;
+  numberOfDoubleBeds?: number;
+  numberOfSingleBeds?: number;
   airConditioning?: boolean;
   wifi?: boolean;
   garage?: boolean;
-  propertyType?: 'house' | 'apartment';
-  distanceToBeach?: number;
-  state?: string;
+  houseOrApartment?: 'house' | 'apartment';
+  mtsToTheBeach?: number;
+  stateOrProvince?: string;
   resort?: string;
   neighborhood?: string;
   limit?: number;
@@ -28,12 +28,33 @@ export class PropertyFilter {
   }
 
   private validateFilters(filters: PropertyFilterOptions): void {
-    const numericFields: (keyof PropertyFilterOptions)[] = ['adults', 'children', 'doubleBeds', 'singleBeds', 'distanceToBeach'];
+    const numericFields: (keyof PropertyFilterOptions)[] = ['numberOfAdults', 'numberOfKids', 'numberOfDoubleBeds', 'numberOfSingleBeds', 'mtsToTheBeach'];
     for (const field of numericFields) {
       const value = filters[field];
-      if (value !== undefined && (typeof value !== 'number' || value < 0 || value > 99)) {
-        throw new Error(`${field} debe estar entre 0 y 99`);
+      if (value !== undefined) {
+        const valorNum = parseInt(value.toString());
+        console.log('--------------');
+        console.log(valorNum);
+        console.log(typeof valorNum);
+        if (typeof valorNum !== 'number') {
+          throw new Error(`El valor de ${field} debe ser un número.`);
+        }
+        if (valorNum < 0 || valorNum > 99) {
+          throw new Error(`El valor de ${field} debe estar entre 0 y 99.`);
+        }
       }
+    }
+
+    if (filters.startDate && isNaN(Date.parse(filters.startDate))) {
+      throw new Error('startDate debe ser una fecha válida.');
+    }
+
+    if (filters.endDate && isNaN(Date.parse(filters.endDate))) {
+      throw new Error('endDate debe ser una fecha válida.');
+    }
+
+    if (filters.startDate && filters.endDate && new Date(filters.startDate) > new Date(filters.endDate)) {
+      throw new Error('startDate no puede ser mayor que endDate.');
     }
   }
 
@@ -46,20 +67,20 @@ export class PropertyFilter {
       };
     }
 
-    if (this.filters.adults !== undefined) {
-      whereClause.adults = { [Op.gte]: this.filters.adults };
+    if (this.filters.numberOfAdults !== undefined) {
+      whereClause.adults = { [Op.gte]: this.filters.numberOfAdults };
     }
 
-    if (this.filters.children !== undefined) {
-      whereClause.children = { [Op.gte]: this.filters.children };
+    if (this.filters.numberOfKids !== undefined) {
+      whereClause.children = { [Op.gte]: this.filters.numberOfKids };
     }
 
-    if (this.filters.doubleBeds !== undefined) {
-      whereClause.doubleBeds = { [Op.gte]: this.filters.doubleBeds };
+    if (this.filters.numberOfDoubleBeds !== undefined) {
+      whereClause.doubleBeds = { [Op.gte]: this.filters.numberOfDoubleBeds };
     }
 
-    if (this.filters.singleBeds !== undefined) {
-      whereClause.singleBeds = { [Op.gte]: this.filters.singleBeds };
+    if (this.filters.numberOfSingleBeds !== undefined) {
+      whereClause.singleBeds = { [Op.gte]: this.filters.numberOfSingleBeds };
     }
 
     if (this.filters.airConditioning !== undefined) {
@@ -74,16 +95,16 @@ export class PropertyFilter {
       whereClause.garage = this.filters.garage;
     }
 
-    if (this.filters.propertyType) {
-      whereClause.propertyType = this.filters.propertyType;
+    if (this.filters.houseOrApartment) {
+      whereClause.propertyType = this.filters.houseOrApartment;
     }
 
-    if (this.filters.distanceToBeach !== undefined) {
-      whereClause.distanceToBeach = { [Op.lte]: this.filters.distanceToBeach };
+    if (this.filters.mtsToTheBeach !== undefined) {
+      whereClause.distanceToBeach = { [Op.lte]: this.filters.mtsToTheBeach };
     }
 
-    if (this.filters.state) {
-      whereClause.state = this.filters.state;
+    if (this.filters.stateOrProvince) {
+      whereClause.state = this.filters.stateOrProvince;
     }
 
     if (this.filters.resort) {
