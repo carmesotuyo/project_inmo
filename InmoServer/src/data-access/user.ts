@@ -1,16 +1,6 @@
 import { Model, DataTypes } from 'sequelize';
 import { sequelize } from '../config/database';
 
-class User1 extends Model {
-  public document!: string;
-  public document_type!: string;
-  public first_name!: string;
-  public last_name!: string;
-  public email!: string;
-  public phone_number!: string;
-  public role!: string;
-  public auth0_id!: string;
-}
 
 export const User = sequelize.define(
   'User',
