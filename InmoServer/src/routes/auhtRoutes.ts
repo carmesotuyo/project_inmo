@@ -9,6 +9,7 @@ const { login, callback } = authController;
 
 router.use(auth(authConfig));
 router.post('/login', login);
+router.post('/register', authController.register);
 router.get('/callback', callback);
 
 export default router;
