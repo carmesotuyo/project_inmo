@@ -1,8 +1,7 @@
 import { Model, DataTypes } from 'sequelize';
 import { sequelize } from '../config/database';
 
-export class User extends Model {
-  public id!: number;
+class User1 extends Model {
   public document!: string;
   public document_type!: string;
   public first_name!: string;
@@ -13,17 +12,13 @@ export class User extends Model {
   public auth0_id!: string;
 }
 
-export default (sequelize: any) =>
-    User.init(
+export const User = sequelize.define(
+  'User',
   {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
     document: {
       type: DataTypes.STRING(30),
       allowNull: false,
+      unique: true,
       validate: {
         is: /^[A-Za-z0-9.-]+$/,
         len: [1, 30],
@@ -50,7 +45,9 @@ export default (sequelize: any) =>
     email: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey: true,
       unique: true,
+
       validate: {
         isEmail: true,
       },
@@ -63,7 +60,7 @@ export default (sequelize: any) =>
       },
     },
     role: {
-      type: DataTypes.ENUM('Administrador', 'Operario', 'Propietario', 'Inquilino'),
+      type: DataTypes.STRING,
       allowNull: false,
     },
     auth0_id: {
@@ -73,14 +70,7 @@ export default (sequelize: any) =>
     },
   },
   {
-    tableName: 'users',
-    sequelize,
-    indexes: [
-        {
-          unique: true,
-          fields: ["email"],
-        },
-      ],
+    tableName: 'Users',
     timestamps: true,
   },
 );
