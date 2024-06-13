@@ -75,19 +75,19 @@ export class PropertyFilter {
     }
 
     if (this.filters.numberOfAdults !== undefined) {
-      whereClause.adults = { [Op.gte]: this.filters.numberOfAdults };
+      whereClause.numberOfAdults = { [Op.gte]: this.filters.numberOfAdults };
     }
 
     if (this.filters.numberOfKids !== undefined) {
-      whereClause.children = { [Op.gte]: this.filters.numberOfKids };
+      whereClause.numberOfKids = { [Op.gte]: this.filters.numberOfKids };
     }
 
     if (this.filters.numberOfDoubleBeds !== undefined) {
-      whereClause.doubleBeds = { [Op.gte]: this.filters.numberOfDoubleBeds };
+      whereClause.numberOfDoubleBeds = { [Op.gte]: this.filters.numberOfDoubleBeds };
     }
 
     if (this.filters.numberOfSingleBeds !== undefined) {
-      whereClause.singleBeds = { [Op.gte]: this.filters.numberOfSingleBeds };
+      whereClause.numberOfSingleBeds = { [Op.gte]: this.filters.numberOfSingleBeds };
     }
 
     if (this.filters.airConditioning !== undefined) {
@@ -103,15 +103,15 @@ export class PropertyFilter {
     }
 
     if (this.filters.houseOrApartment) {
-      whereClause.propertyType = this.filters.houseOrApartment;
+      whereClause.houseOrApartment = this.filters.houseOrApartment;
     }
 
     if (this.filters.mtsToTheBeach !== undefined) {
-      whereClause.distanceToBeach = { [Op.lte]: this.filters.mtsToTheBeach };
+      whereClause.mtsToTheBeach = { [Op.gte]: this.filters.mtsToTheBeach };
     }
 
     if (this.filters.stateOrProvince) {
-      whereClause.state = this.filters.stateOrProvince;
+      whereClause.stateOrProvince = this.filters.stateOrProvince;
     }
 
     if (this.filters.resort) {
