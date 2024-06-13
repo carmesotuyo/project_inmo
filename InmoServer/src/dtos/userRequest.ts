@@ -5,6 +5,6 @@ export interface UserRequest {
     last_name: string;
     email: string;
     phone_number: string;
-    role: string;
+    role: 'Administrador' | 'Operario' | 'Propietario' | 'Inquilino';
     auth0_id: string;
   }
