@@ -56,6 +56,26 @@ export class AuthController {
     }
   };
 
+  public register = async (req: Request, res: Response) => {
+    try {
+      const newUser = await this.service.createUser(req.body);
+      res.status(201).json(newUser);
+    } catch (error: any) {
+      console.error('Error registering user:', error.response ? error.response.data : error.message);
+      res.status(500).json({ error: error.response ? error.response.data : error.message });
+    }
+  };
+
+  // publlic delete = async (req: Request, res: Response) => {
+  //   try {
+  //     const user = await this.service.deleteUser(req.body);
+  //     res.status(200).json(user);
+  //   } catch (error: any) {
+  //     console.error('Error deleting user:', error.response ? error.response.data : error.message);
+  //     res.status(500).json({ error: error.response ? error.response.data : error.message });
+  //   }
+  // }
+
   public callback = (req: Request, res: Response) => {
     res.send('Login successful. You can close this tab.');
   };
