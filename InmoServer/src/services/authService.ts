@@ -4,11 +4,6 @@ import { UserRequest } from '../dtos/userRequest';
 import axios from 'axios';
 
 export class UserService  {
-    // async createUser(data: UserRequest): Promise<InstanceType<typeof User>> {
-    //   if (!data) throw Error('Data incorrecta, DTO vacio');
-    //   const userObject = { ...data };
-    //   return await User.create(userObject);
-    // }
 
     async createUser(data: UserRequest): Promise<InstanceType<typeof User>> {
         // Registrar usuario en Auth0
