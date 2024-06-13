@@ -1,6 +1,7 @@
 import { Op } from 'sequelize';
 
 export interface PropertyFilterOptions {
+  [key: string]: number | boolean | string | undefined;
   startDate?: string;
   endDate?: string;
   numberOfAdults?: number | string;
@@ -33,15 +34,13 @@ export class PropertyFilter {
       const value = filters[field];
       if (value !== undefined) {
         const valorNum = parseInt(value.toString());
-        console.log('--------------');
-        console.log(valorNum);
-        console.log(typeof valorNum);
-        if (typeof valorNum !== 'number') {
+        if (isNaN(valorNum)) {
           throw new Error(`El valor de ${field} debe ser un número.`);
         }
         if (valorNum < 0 || valorNum > 99) {
           throw new Error(`El valor de ${field} debe estar entre 0 y 99.`);
         }
+        filters[field] = valorNum; // Convierte el valor a número
       }
     }
 
@@ -55,6 +54,14 @@ export class PropertyFilter {
 
     if (filters.startDate && filters.endDate && new Date(filters.startDate) > new Date(filters.endDate)) {
       throw new Error('startDate no puede ser mayor que endDate.');
+    }
+
+    // Convertir strings a booleanos para filtros booleanos
+    const booleanFields: (keyof PropertyFilterOptions)[] = ['airConditioning', 'wifi', 'garage'];
+    for (const field of booleanFields) {
+      if (filters[field] !== undefined) {
+        filters[field as string] = filters[field] === 'true' || filters[field] === true;
+      }
     }
   }
 
