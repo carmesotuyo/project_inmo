@@ -73,7 +73,7 @@ export class ReservationServiceImpl implements ReservationService {
     const daysBeforeStart = Math.ceil((startDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
     const propertyId = reservation.get('propertyId') as number;
     const property = await this.propertyService.getPropertyByID(propertyId);
-    const { refundDays, refundPercentage } = await this.countryService.getRefundPolicyByCountry(property.get('country') as string);
+    const { refundDays, refundPercentage } = await this.countryService.getRefundPolicyByCountry(property.get('countryId') as string);
 
     let refundAmount = 0;
     if (daysBeforeStart > refundDays) {
