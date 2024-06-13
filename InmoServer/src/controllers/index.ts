@@ -7,6 +7,9 @@ import { CountryController } from './countryController';
 import { CountryServiceImpl } from '../services/countryService';
 import { PropertyAvailabilityController } from './propertyAvailabilityController';
 import { PropertyAvailabilityServiceImpl } from '../services/propertyAvailabilityService';
+import { AuthController } from './authController';
+import { UserService } from '../services/authService';
+
 
 // Instanciar las implementaciones de los servicios
 const queueService = new QueueServiceImpl();
@@ -14,9 +17,11 @@ const propertyService = new PropertyServiceImpl();
 const propertyAvailabilityService = new PropertyAvailabilityServiceImpl();
 const countryService = new CountryServiceImpl();
 const reservationService = new ReservationServiceImpl(propertyAvailabilityService, countryService, propertyService);
+const userService = new UserService();
 
 // Instanciar el controlador con las implementaciones concretas de los servicios
 export const propertyController = new PropertyController(propertyService, queueService);
 export const reservationController = new ReservationController(reservationService, queueService);
 export const countryController = new CountryController(countryService, queueService);
 export const propertyAvailabilityController = new PropertyAvailabilityController(propertyAvailabilityService, queueService);
+export const authController = new AuthController(userService);
