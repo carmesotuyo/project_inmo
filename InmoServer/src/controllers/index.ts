@@ -11,6 +11,9 @@ import { SensorController } from './sensorController';
 import { SensorServiceImpl } from '../services/sensorService';
 import { ServiceTypeController } from './sensorServiceTypeController';
 import { ServiceTypeServiceImpl } from '../services/sensorServiceTypeService';
+import { AuthController } from './authController';
+import { UserService } from '../services/authService';
+
 
 // Instanciar las implementaciones de los servicios
 const queueService = new QueueServiceImpl();
@@ -20,6 +23,7 @@ const countryService = new CountryServiceImpl();
 const reservationService = new ReservationServiceImpl(propertyAvailabilityService, countryService, propertyService);
 const serviceTypeService = new ServiceTypeServiceImpl();
 const sensorService = new SensorServiceImpl(serviceTypeService, propertyService);
+const userService = new UserService();
 
 // Instanciar el controlador con las implementaciones concretas de los servicios
 export const propertyController = new PropertyController(propertyService, queueService);
@@ -28,3 +32,4 @@ export const countryController = new CountryController(countryService, queueServ
 export const propertyAvailabilityController = new PropertyAvailabilityController(propertyAvailabilityService, queueService);
 export const sensorController = new SensorController(sensorService, queueService);
 export const serviceTypeController = new ServiceTypeController(serviceTypeService, queueService);
+export const authController = new AuthController(userService);
