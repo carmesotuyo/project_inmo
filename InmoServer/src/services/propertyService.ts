@@ -1,8 +1,6 @@
 import { PropertyRequest } from '../dtos/propertyRequest';
 import { Property } from '../data-access/property';
 import { PropertyService } from '../interfaces/services/propertyService';
-import { Model } from 'sequelize';
-import { Reservation } from '../data-access/reservation';
 import { PropertyAvailability } from '../data-access/propertyAvailability';
 import { PropertyFilterOptions } from '../utils/propertyFilters';
 import { PropertyFilter } from '../utils/propertyFilters';
