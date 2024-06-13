@@ -12,8 +12,8 @@ const sequelize = new Sequelize(process.env.DB_NAME!, process.env.DB_USER!, proc
   },
 });
 
-import { User } from '../data-access/user';
 import { setRelationships } from '../data-access/relationships';
+import { User } from '../data-access/user';
 import { Property } from '../data-access/property';
 import { Country } from '../data-access/country';
 import { Reservation } from '../data-access/reservation';
