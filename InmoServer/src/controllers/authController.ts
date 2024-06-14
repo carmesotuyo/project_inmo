@@ -52,7 +52,7 @@ export class AuthController {
 
       logger.info(`User logged in successfully - email: ${email}`);
 
-      res.json({ token });
+      res.status(200).json({ token });
     } catch (error: any) {
       if (error.response && error.response.status === 403) {
         logger.error(`Error during login request`, {error: error.response ? error.response.data : error.message});
