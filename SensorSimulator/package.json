@@ -1,0 +1,45 @@
+{
+  "name": "sensorsemulator",
+  "version": "1.0.0",
+  "description": "Sensor signal emulator component",
+  "main": "./src/app.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "cd src && npx ts-node app.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IngSoft-AR-2023-2/186554_271968_274924.git"
+  },
+  "author": "Carme, Fer y Nacho",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/IngSoft-AR-2023-2/186554_271968_274924/issues"
+  },
+  "homepage": "https://github.com/IngSoft-AR-2023-2/186554_271968_274924#readme",
+  "devDependencies": {
+    "prettier": "^3.3.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5",
+    "@types/node": "^20.14.2",
+    "nodemon": "^3.1.0",
+    "@types/amqplib": "^0.10.5"
+  },
+  "prettier": {
+    "printWidth": 300,
+    "tabWidth": 2,
+    "useTabs": false,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "all",
+    "bracketSpacing": true,
+    "jsxBracketSameLine": false,
+    "arrowParens": "always",
+    "endOfLine": "lf"
+  },
+  "dependencies": {
+    "amqplib": "^0.10.4",
+    "faker": "^5.5.3",
+    "dotenv": "^16.4.5"
+  }
+}
