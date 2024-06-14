@@ -12,9 +12,9 @@ export class ReservationController {
 
   public createReservation = async (req: Request, res: Response) => {
     try {
-      const reservation: any = await this.reservationService.createReservation(req.body); //Reservation request
+      const reservation = await this.reservationService.createReservation(req.body); //Reservation request
       this.queueService.addJobToQueue(reservation.toJSON());
-      logger.info(`Reservation created - code: ${reservation.reservationCode}`);
+      logger.info(`Reservation created - code: ${reservation.get('reservationCode')}`);
       res.status(201).json(reservation);
     } catch (error: any) {
       logger.error('Error creating reservation', { error: getErrorMessage(error) });
@@ -33,13 +33,13 @@ export class ReservationController {
         return;
       }
 
-      const reservation: any = await this.reservationService.getReservationByEmailAndCode(email as string, reservationCode as string);
+      const reservation = await this.reservationService.getReservationByEmailAndCode(email as string, reservationCode as string);
 
       if (!reservation) {
         res.status(404).json({ message: 'Reserva no encontrada' });
         return;
       }
-      logger.info(`Reservation fetched - code: ${reservation.reservationCode}`);
+      logger.info(`Reservation fetched - code: ${reservation.get('reservationCode')}`);
       res.status(200).json(reservation);
     } catch (error: any) {
       logger.error('Error fetching reservation', { error: getErrorMessage(error) });
@@ -58,8 +58,8 @@ export class ReservationController {
         return;
       }
 
-      const reservation: any = await this.reservationService.cancelReservation(email, reservationCode);
-      logger.info(`Reservation canceled - code: ${reservation.reservationCode}`);
+      const reservation = await this.reservationService.cancelReservation(email, reservationCode);
+      logger.info(`Reservation canceled - code: ${reservation?.get('reservationCode')}`);
       res.status(200).json(reservation);
     } catch (error: any) {
       logger.error('Error canceling reservation', { error: getErrorMessage(error) });
