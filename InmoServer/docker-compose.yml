@@ -1,13 +1,23 @@
-version: "3.8"
+version: '3.8'
 
 services:
   cache-redis:
     image: redis:latest
     container_name: cache-redis
     ports:
-      - "6379:6379"
+      - '6379:6379'
     volumes:
       - redis-data:/data
+    networks:
+      - inmo-network
+
+  queue-redis:
+    image: redis:latest
+    container_name: queue-redis
+    ports:
+      - '6380:6379'
+    volumes:
+      - redis-queue-data:/data
     networks:
       - inmo-network
 
@@ -32,15 +42,32 @@ services:
       - MYSQL_ROOT_PASSWORD=secret
       - MYSQL_DATABASE=inmo
     ports:
-      - "3306:3306"
+      - '3306:3306'
     networks:
       - inmo-network
     volumes:
       - mysql-data:/var/lib/mysql
 
+  rabbitmq:
+    image: 'rabbitmq:3-management'
+    ports:
+      - '5672:5672' # RabbitMQ standard port
+      - '15672:15672' # RabbitMQ management web interface port
+    environment:
+      RABBITMQ_DEFAULT_USER: 'user'
+      RABBITMQ_DEFAULT_PASS: 'password'
+    volumes:
+      - 'rabbitmq_data:/var/lib/rabbitmq'
+      - 'rabbitmq_log:/var/log/rabbitmq'
+    networks:
+      - inmo-network
+
 volumes:
   redis-data:
+  redis-queue-data:
   mysql-data:
+  rabbitmq_data:
+  rabbitmq_log:
 
 networks:
   inmo-network:
