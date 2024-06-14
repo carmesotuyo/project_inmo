@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { UserService } from '../services/authService';
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
+import logger from '../config/logger';
 
 export class AuthController {
   constructor(private service: UserService) {}
@@ -49,19 +50,36 @@ export class AuthController {
         expiresIn: '1h',
       });
 
+      logger.info('User logged in successfully', {
+        username,
+        timestamp: new Date().toISOString(),
+      });
+
       res.json({ token });
     } catch (error: any) {
       console.error('Error during login request:', error.response ? error.response.data : error.message);
+      logger.error('Error during login request', {
+        error: error.response ? error.response.data : error.message,
+        timestamp: new Date().toISOString(),
+      });
       res.status(500).json({ error: error.response ? error.response.data : error.message });
     }
   };
 
   public register = async (req: Request, res: Response) => {
     try {
-      const newUser = await this.service.createUser(req.body);
+      const newUser: any = await this.service.createUser(req.body);
+      logger.info('User registered successfully', {
+        email: newUser.email,
+        timestamp: new Date().toISOString(),
+      });
       res.status(201).json(newUser);
     } catch (error: any) {
       console.error('Error registering user:', error.response ? error.response.data : error.message);
+      logger.error('Error registering user', {
+        error: error.response ? error.response.data : error.message,
+        timestamp: new Date().toISOString(),
+      });
       res.status(500).json({ error: error.response ? error.response.data : error.message });
     }
   };
