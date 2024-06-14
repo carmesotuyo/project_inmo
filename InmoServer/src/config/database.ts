@@ -13,6 +13,7 @@ const sequelize = new Sequelize(process.env.DB_NAME!, process.env.DB_USER!, proc
 });
 
 import { setRelationships } from '../data-access/relationships';
+import { User } from '../data-access/user';
 import { Property } from '../data-access/property';
 import { Country } from '../data-access/country';
 import { Reservation } from '../data-access/reservation';
@@ -32,6 +33,7 @@ const syncTables = async () => {
       await Sensor.sync();
       await Reservation.sync();
       await PropertyAvailability.sync();
+      await User.sync();
       await PropertySensor.sync();
       console.log('Los modelos fueron sincronizados con la base de datos.');
     }

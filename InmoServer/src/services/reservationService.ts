@@ -6,6 +6,8 @@ import { PropertyAvailabilityService } from '../interfaces/services/propertyAvai
 import { checkDateOverlap } from '../utils/dateUtils';
 import { CountryService } from '../interfaces/services/countryService';
 import { PropertyService } from '../interfaces/services/propertyService';
+import { ReservationFilterOptions } from '../utils/reservationFilters';
+import { ReservationFilter } from '../utils/reservationFilters';
 // Importamos el DTO
 import { Op } from 'sequelize';
 
@@ -60,6 +62,13 @@ export class ReservationServiceImpl implements ReservationService {
     });
     return reservation;
   }
+  async getReservationsAdmin(filters: ReservationFilterOptions): Promise<InstanceType<typeof Reservation>[]> {
+    // Validar que sea admin/operario
+    const reservationFilter = new ReservationFilter(filters);
+    const whereClause = await reservationFilter.buildWhereClause();
+
+    return await Reservation.findAll({ where: whereClause, limit: filters.limit, offset: filters.offset });
+  }
 
   async cancelReservation(email: string, reservationCode: string): Promise<InstanceType<typeof Reservation> | null> {
     const reservation = await this.getReservationByEmailAndCode(email, reservationCode);
@@ -73,7 +82,7 @@ export class ReservationServiceImpl implements ReservationService {
     const daysBeforeStart = Math.ceil((startDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
     const propertyId = reservation.get('propertyId') as number;
     const property = await this.propertyService.getPropertyByID(propertyId);
-    const { refundDays, refundPercentage } = await this.countryService.getRefundPolicyByCountry(property.get('country') as string);
+    const { refundDays, refundPercentage } = await this.countryService.getRefundPolicyByCountry(property.get('countryId') as string);
 
     let refundAmount = 0;
     if (daysBeforeStart > refundDays) {

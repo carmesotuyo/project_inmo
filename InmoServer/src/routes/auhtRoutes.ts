@@ -1,13 +1,15 @@
 import { Router } from 'express';
 import { auth } from 'express-openid-connect';
-import { login, profile, callback } from '../controllers/authController';
+import { authController } from '../controllers';
 import { authConfig } from '../config/authConfig';
+import { authenticateJWT } from '../middleware/authMiddleware';
 
 const router = Router();
+const { login, callback } = authController;
 
 router.use(auth(authConfig));
 router.post('/login', login);
-router.get('/profile', profile);
+router.post('/register', authController.register);
 router.get('/callback', callback);
 
 export default router;
