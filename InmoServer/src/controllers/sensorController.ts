@@ -13,9 +13,9 @@ export class SensorController {
 
   async createSensor(req: Request, res: Response): Promise<void> {
     try {
-      const sensor: any = await this.sensorService.createSensor(req.body);
+      const sensor = await this.sensorService.createSensor(req.body);
       this.queueService.addJobToQueue(sensor.toJSON());
-      logger.info(`Sensor created - name: ${sensor.name}`);
+      logger.info(`Sensor created - name: ${sensor.get('name')}`);
       res.status(201).json(sensor);
     } catch (error) {
       logger.error('Error creating sensor', { error: getErrorMessage(error) });
