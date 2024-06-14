@@ -56,7 +56,6 @@ const simulateSensorSignals = async () => {
     });
 
     const channel = await connection.createChannel();
-
     const exchange = 'sensor_data_exchange';
     await channel.assertExchange(exchange, 'fanout', { durable: false });
 
