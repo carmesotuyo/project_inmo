@@ -11,6 +11,7 @@ import { SensorController } from './sensorController';
 import { SensorServiceImpl } from '../services/sensorService';
 import { ServiceTypeController } from './sensorServiceTypeController';
 import { ServiceTypeServiceImpl } from '../services/sensorServiceTypeService';
+import { IncidentService } from '../incident-service/incidentService';
 
 // Instanciar las implementaciones de los servicios
 const queueService = new QueueServiceImpl();
@@ -20,6 +21,10 @@ const countryService = new CountryServiceImpl();
 const reservationService = new ReservationServiceImpl(propertyAvailabilityService, countryService, propertyService);
 const serviceTypeService = new ServiceTypeServiceImpl();
 const sensorService = new SensorServiceImpl(serviceTypeService, propertyService);
+const incidentService = new IncidentService();
+
+// Inicializar las queues de escucha
+incidentService.init();
 
 // Instanciar el controlador con las implementaciones concretas de los servicios
 export const propertyController = new PropertyController(propertyService, queueService);
