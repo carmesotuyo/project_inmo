@@ -13,9 +13,9 @@ export class PropertyController {
 
   public createProperty = async (req: Request, res: Response) => {
     try {
-      const property: any = await this.propertyService.createProperty(req.body); //propertyRequest
+      const property = await this.propertyService.createProperty(req.body);
       this.queueService.addJobToQueue(property.toJSON());
-      logger.info(`Property created - name: ${property.name}`);
+      logger.info(`Property created - name: ${property.get('name')}`);
       res.status(201).json(property);
     } catch (error: any) {
       logger.error('Error creating property', { error: getErrorMessage(error) });
