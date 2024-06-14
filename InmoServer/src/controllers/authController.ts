@@ -33,7 +33,7 @@ export class AuthController {
       });
 
       const { email } = userInfoResponse.data;
-      const user: any = await this.service.getUserByEmail(email);
+      const user = await this.service.getUserByEmail(email);
 
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
@@ -41,9 +41,9 @@ export class AuthController {
 
       // Crear nuestro propio JWT
       const tokenPayload = {
-        id: user.auth0_id,
-        email: user.email,
-        role: user.role,
+        id: user.get('auth0_id'),
+        email: user.get('email'),
+        role: user.get('role'),
       };
 
       const token = jwt.sign(tokenPayload, process.env.JWT_SECRET!, {
@@ -66,8 +66,8 @@ export class AuthController {
 
   public register = async (req: Request, res: Response) => {
     try {
-      const newUser: any = await this.service.createUser(req.body);
-      logger.info(`User registered successfully - email: ${newUser.email}`);
+      const newUser = await this.service.createUser(req.body);
+      logger.info(`User registered successfully - email: ${newUser.get('email')}`);
       res.status(201).json(newUser);
     } catch (error: any) {
       logger.error(`Error registering user - ${error.message}`);
