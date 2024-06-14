@@ -12,9 +12,9 @@ export class CountryController {
 
   public createCountry = async (req: Request, res: Response) => {
     try {
-      const country: any = await this.countryService.createCountry(req.body);
+      const country = await this.countryService.createCountry(req.body);
       this.queueService.addJobToQueue(country.toJSON());
-      logger.info(`Country created - name: ${country.name}`);
+      logger.info(`Country created - name: ${country.get('name')}`);
       res.status(201).json(country);
     } catch (error: any) {
       logger.error('Error creating country', { error: getErrorMessage(error) });
