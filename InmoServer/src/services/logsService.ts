@@ -1,4 +1,4 @@
-import Log, { LogDocument } from '../models/logs';
+import Log, { LogDocument } from '../data-access/logs';
 
 export class LogService {
   async getLogs(): Promise<LogDocument[]> {
