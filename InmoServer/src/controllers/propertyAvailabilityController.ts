@@ -12,9 +12,9 @@ export class PropertyAvailabilityController {
 
   public createAvailability = async (req: Request, res: Response) => {
     try {
-      const availability: any = await this.propertyAvailabilityService.createAvailability(req.body);
+      const availability = await this.propertyAvailabilityService.createAvailability(req.body);
       this.queueService.addJobToQueue(availability.toJSON());
-      logger.info(`Availability created - property: ${availability.propertyId}`);
+      logger.info(`Availability created - property: ${availability.get('propertyId')}`);
       res.status(201).json(availability);
     } catch (error: any) {
       logger.error('Error creating availability', { error: getErrorMessage(error) });
