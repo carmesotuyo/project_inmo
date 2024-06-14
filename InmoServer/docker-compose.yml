@@ -45,19 +45,6 @@ services:
       - mysql-data:/var/lib/mysql
     networks:
       - inmo-network
-  
-  mongodb:
-    image: mongo:latest
-    container_name: mongodb_inmoLOGGER
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=secret
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo-data:/data/db
-    networks:
-      - inmo-network
 
 volumes:
   redis-data:
