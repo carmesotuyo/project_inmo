@@ -50,36 +50,27 @@ export class AuthController {
         expiresIn: '1h',
       });
 
-      logger.info('User logged in successfully', {
-        username,
-        timestamp: new Date().toISOString(),
-      });
+      logger.info(`User logged in successfully - email: ${email}`);
 
       res.json({ token });
     } catch (error: any) {
-      console.error('Error during login request:', error.response ? error.response.data : error.message);
-      logger.error('Error during login request', {
-        error: error.response ? error.response.data : error.message,
-        timestamp: new Date().toISOString(),
-      });
-      res.status(500).json({ error: error.response ? error.response.data : error.message });
+      if (error.response && error.response.status === 403) {
+        logger.error(`Error during login request`, {error: error.response ? error.response.data : error.message});
+        res.status(403).json({ error: error.response ? error.response.data : error.message });
+      } else {
+        logger.error(`Error during login request - ${error}`);
+        res.status(500).json({ error: error.response ? error.response.data : error.message });
+      }
     }
   };
 
   public register = async (req: Request, res: Response) => {
     try {
       const newUser: any = await this.service.createUser(req.body);
-      logger.info('User registered successfully', {
-        email: newUser.email,
-        timestamp: new Date().toISOString(),
-      });
+      logger.info(`User registered successfully - email: ${newUser.email}`);
       res.status(201).json(newUser);
     } catch (error: any) {
-      console.error('Error registering user:', error.response ? error.response.data : error.message);
-      logger.error('Error registering user', {
-        error: error.response ? error.response.data : error.message,
-        timestamp: new Date().toISOString(),
-      });
+      logger.error(`Error registering user - ${error.message}`);
       res.status(500).json({ error: error.response ? error.response.data : error.message });
     }
   };
