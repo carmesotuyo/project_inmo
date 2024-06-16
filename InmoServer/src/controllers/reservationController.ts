@@ -13,7 +13,7 @@ export class ReservationController {
   public createReservation = async (req: Request, res: Response) => {
     try {
       const reservation = await this.reservationService.createReservation(req.body); //Reservation request
-      this.queueService.addJobToQueue(reservation.toJSON());
+      this.queueService.addJobToQueue("reservation", reservation.toJSON());
       logger.info(`Reservation created - code: ${reservation.get('reservationCode')}`);
       res.status(201).json(reservation);
     } catch (error: any) {
