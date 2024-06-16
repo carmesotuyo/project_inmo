@@ -41,7 +41,7 @@ export class SensorController {
       const { id } = req.params;
       const observableProperties = await this.sensorService.getObservableProperties(id);
       this.queueService.addJobToQueue(observableProperties);
-      res.status(200).json({ message: observableProperties });
+      res.status(200).json({ observableProperties });
     } catch (error) {
       res.status(400).json({
         message: 'Error updating sensor',

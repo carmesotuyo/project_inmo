@@ -1,17 +1,30 @@
 import { connect } from 'amqplib';
 import { Pipeline } from './pipeline/Pipeline';
 import { QueueFactory } from './pipeline/QueueFactory';
-import { validateValuesRange, checkPriority, validateAlertRange, notify } from './filters/filters';
+import { Filters } from './filters/filters';
 import dotenv from 'dotenv';
+import { ServiceTypeService } from '../interfaces/services/sensorServiceType';
+import { SensorService } from '../interfaces/services/sensorService';
+import { NotificationService } from '../interfaces/services/notificationService';
+import { SensorData } from './types/sensorData';
+import { PropertyService } from '../interfaces/services/propertyService';
+import { QueueService } from '../interfaces/services/queueService';
 
 dotenv.config();
 
 export class IncidentService {
-  private pipeline: Pipeline<JSON>;
+  private pipeline: Pipeline<SensorData>;
 
-  constructor() {
-    const queueFactory = QueueFactory.getQueueFactory<JSON>;
-    this.pipeline = new Pipeline<JSON>([validateValuesRange, checkPriority, validateAlertRange, notify], queueFactory);
+  constructor(
+    private sensorService: SensorService,
+    private serviceType: ServiceTypeService,
+    private notificationService: NotificationService,
+    private propertyService: PropertyService,
+    private queueService: QueueService,
+  ) {
+    const queueFactory = QueueFactory.getQueueFactory<SensorData>;
+    const filtersInit = new Filters(this.sensorService, this.serviceType, this.notificationService, this.propertyService, this.queueService);
+    this.pipeline = new Pipeline<SensorData>([filtersInit.verifyPropertyAndSensorExist, filtersInit.validateValuesRange, filtersInit.validateAlertRange, filtersInit.notify], queueFactory);
 
     this.pipeline.on('finalOutput', this.handleFinalOutput);
     this.pipeline.on('errorInFilter', this.handleErrorInFilter);

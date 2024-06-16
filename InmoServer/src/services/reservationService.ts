@@ -8,8 +8,6 @@ import { CountryService } from '../interfaces/services/countryService';
 import { PropertyService } from '../interfaces/services/propertyService';
 import { ReservationFilterOptions } from '../utils/reservationFilters';
 import { ReservationFilter } from '../utils/reservationFilters';
-// Importamos el DTO
-import { Op } from 'sequelize';
 
 export class ReservationServiceImpl implements ReservationService {
   constructor(

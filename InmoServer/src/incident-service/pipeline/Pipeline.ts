@@ -3,7 +3,7 @@ import { EventEmitter } from 'events';
 // Importa la interfaz IQueue, que define los métodos que debe tener cualquier cola que usemos.
 import { IQueue } from '../../interfaces/queues/IQueue';
 
-type FilterFunction<T> = (input: T) => T;
+type FilterFunction<T> = (input: T) => Promise<T>;
 
 // Declara la clase Pipeline, que extiende EventEmitter para poder emitir eventos.
 export class Pipeline<T> extends EventEmitter {
@@ -25,7 +25,7 @@ export class Pipeline<T> extends EventEmitter {
 
       filterQueue.process(async (data: T) => {
         try {
-          const filteredData = filter(data);
+          const filteredData = await filter(data);
           this.enqueueNextFilter(index, filteredData);
         } catch (err) {
           this.emit('errorInFilter', err, data);

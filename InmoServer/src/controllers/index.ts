@@ -14,6 +14,7 @@ import { ServiceTypeServiceImpl } from '../services/sensorServiceTypeService';
 import { IncidentService } from '../incident-service/incidentService';
 import { AuthController } from './authController';
 import { UserService } from '../services/authService';
+import { NotificationServiceImpl } from '../notification-service/notificationService';
 
 // Instanciar las implementaciones de los servicios
 const queueService = new QueueServiceImpl();
@@ -24,7 +25,8 @@ const reservationService = new ReservationServiceImpl(propertyAvailabilityServic
 const serviceTypeService = new ServiceTypeServiceImpl();
 const sensorService = new SensorServiceImpl(serviceTypeService, propertyService);
 const userService = new UserService();
-const incidentService = new IncidentService();
+const notificationService = new NotificationServiceImpl();
+const incidentService = new IncidentService(sensorService, serviceTypeService, notificationService, propertyService, queueService);
 
 // Inicializar las queues de escucha
 incidentService.init();
