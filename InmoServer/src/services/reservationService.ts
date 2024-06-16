@@ -53,6 +53,7 @@ export class ReservationServiceImpl implements ReservationService {
     //Faltaria agregar que llegue notifiacion al admin para que apruebe la reserva
     const reservation = await Reservation.create(reservationObject);
     this.propertyAvailabilityService.adjustPropertyAvailabilityFromReservationDates(propertyId, startDate, endDate);
+    // TODO: llamar al servicio den notificaciones para enviar la notificacion
     return reservation;
   }
   async getReservationByEmailAndCode(email: string, reservationCode: string): Promise<InstanceType<typeof Reservation> | null> {

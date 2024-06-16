@@ -14,6 +14,8 @@ import { ServiceTypeServiceImpl } from '../services/sensorServiceTypeService';
 import { AuthController } from './authController';
 import { UserService } from '../services/authService';
 import { PaymentServiceImpl } from '../services/paymentService';
+import { LogService } from '../services/logsService';
+import { LogController } from './logsController';
 
 // Instanciar las implementaciones de los servicios
 const queueService = new QueueServiceImpl();
@@ -25,6 +27,7 @@ const reservationService = new ReservationServiceImpl(propertyAvailabilityServic
 const serviceTypeService = new ServiceTypeServiceImpl();
 const sensorService = new SensorServiceImpl(serviceTypeService, propertyService);
 const userService = new UserService();
+const logService = new LogService();
 
 // Instanciar el controlador con las implementaciones concretas de los servicios
 export const propertyController = new PropertyController(propertyService, queueService);
@@ -34,3 +37,4 @@ export const propertyAvailabilityController = new PropertyAvailabilityController
 export const sensorController = new SensorController(sensorService, queueService);
 export const serviceTypeController = new ServiceTypeController(serviceTypeService, queueService);
 export const authController = new AuthController(userService);
+export const logController = new LogController(logService);

@@ -8,7 +8,6 @@ export const User = sequelize.define(
     document: {
       type: DataTypes.STRING(30),
       allowNull: false,
-      unique: true,
       validate: {
         is: /^[A-Za-z0-9.-]+$/,
         len: [1, 30],
