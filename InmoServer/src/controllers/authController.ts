@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { UserService } from '../services/authService';
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
+import logger from '../config/logger';
 
 export class AuthController {
   constructor(private service: UserService) {}
@@ -32,7 +33,7 @@ export class AuthController {
       });
 
       const { email } = userInfoResponse.data;
-      const user: any = await this.service.getUserByEmail(email);
+      const user = await this.service.getUserByEmail(email);
 
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
@@ -40,28 +41,36 @@ export class AuthController {
 
       // Crear nuestro propio JWT
       const tokenPayload = {
-        id: user.auth0_id,
-        email: user.email,
-        role: user.role,
+        id: user.get('auth0_id'),
+        email: user.get('email'),
+        role: user.get('role'),
       };
 
       const token = jwt.sign(tokenPayload, process.env.JWT_SECRET!, {
         expiresIn: '1h',
       });
 
-      res.json({ token });
+      logger.info(`User logged in successfully - email: ${email}`);
+
+      res.status(200).json({ token });
     } catch (error: any) {
-      console.error('Error during login request:', error.response ? error.response.data : error.message);
-      res.status(500).json({ error: error.response ? error.response.data : error.message });
+      if (error.response && error.response.status === 403) {
+        logger.error(`Error during login request`, {error: error.response ? error.response.data : error.message});
+        res.status(403).json({ error: error.response ? error.response.data : error.message });
+      } else {
+        logger.error(`Error during login request - ${error}`);
+        res.status(500).json({ error: error.response ? error.response.data : error.message });
+      }
     }
   };
 
   public register = async (req: Request, res: Response) => {
     try {
       const newUser = await this.service.createUser(req.body);
+      logger.info(`User registered successfully - email: ${newUser.get('email')}`);
       res.status(201).json(newUser);
     } catch (error: any) {
-      console.error('Error registering user:', error.response ? error.response.data : error.message);
+      logger.error(`Error registering user - ${error.message}`);
       res.status(500).json({ error: error.response ? error.response.data : error.message });
     }
   };

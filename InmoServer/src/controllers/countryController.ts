@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { CountryService } from '../interfaces/services/countryService';
 import { QueueService } from '../interfaces/services/queueService';
 import { getErrorMessage } from '../utils/handleError';
+import logger from '../config/logger';
 
 export class CountryController {
   constructor(
@@ -13,8 +14,10 @@ export class CountryController {
     try {
       const country = await this.countryService.createCountry(req.body);
       this.queueService.addJobToQueue(country.toJSON());
+      logger.info(`Country created - name: ${country.get('name')}`);
       res.status(201).json(country);
     } catch (error: any) {
+      logger.error('Error creating country', { error: getErrorMessage(error) });
       res.status(400).json({
         message: 'Error creating country',
         error: getErrorMessage(error),
@@ -33,8 +36,10 @@ export class CountryController {
       }
 
       this.queueService.addJobToQueue(updatedCountry.toJSON());
+      logger.info(`Country updated - name: ${name}`);
       res.status(200).json(updatedCountry);
     } catch (error: any) {
+      logger.error('Error updating country', { error: getErrorMessage(error) });
       res.status(400).json({
         message: 'Error updating country',
         error: getErrorMessage(error),
