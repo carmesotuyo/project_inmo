@@ -13,7 +13,8 @@ export class CountryController {
   public createCountry = async (req: Request, res: Response) => {
     try {
       const country = await this.countryService.createCountry(req.body);
-      this.queueService.addJobToQueue(country.toJSON());
+      // TODO sacar esto
+      //this.queueService.addJobToQueue("country", country.toJSON());
       logger.info(`Country created - name: ${country.get('name')}`);
       res.status(201).json(country);
     } catch (error: any) {
@@ -34,8 +35,8 @@ export class CountryController {
       if (!updatedCountry) {
         return res.status(404).json({ message: 'Country not found' });
       }
-
-      this.queueService.addJobToQueue(updatedCountry.toJSON());
+      // TODO sacar esto
+      //this.queueService.addJobToQueue("country", updatedCountry.toJSON());
       logger.info(`Country updated - name: ${name}`);
       res.status(200).json(updatedCountry);
     } catch (error: any) {
