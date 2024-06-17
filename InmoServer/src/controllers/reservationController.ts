@@ -13,7 +13,7 @@ export class ReservationController {
   public createReservation = async (req: Request, res: Response) => {
     try {
       const reservation = await this.reservationService.createReservation(req.body); //Reservation request
-      this.queueService.addJobToQueue(reservation.toJSON());
+      this.queueService.addJobToQueue("reservation", reservation.toJSON());
       logger.info(`Reservation created - code: ${reservation.get('reservationCode')}`);
       res.status(201).json(reservation);
     } catch (error: any) {
@@ -79,6 +79,25 @@ export class ReservationController {
       logger.error('Error fetching reservations', { error: getErrorMessage(error) });
       res.status(500).json({
         message: 'Error consultando las reservas',
+        error: getErrorMessage(error),
+      });
+    }
+  };
+  public paymentCorrect = async (req: Request, res: Response) => {
+    try {
+      const { reservationId, email, totalPaid } = req.body;
+
+      if (!reservationId || !email || totalPaid == null) {
+        res.status(400).json({ message: 'Reservation ID, email y total pagado son requeridos' });
+        return;
+      }
+
+      await this.reservationService.paymentCorrect(reservationId, email, totalPaid);
+
+      res.status(200).json({ message: 'Pago procesado correctamente' });
+    } catch (error: any) {
+      res.status(400).json({
+        message: 'Error procesando el pago',
         error: getErrorMessage(error),
       });
     }

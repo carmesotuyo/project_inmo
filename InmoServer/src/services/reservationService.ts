@@ -8,12 +8,16 @@ import { CountryService } from '../interfaces/services/countryService';
 import { PropertyService } from '../interfaces/services/propertyService';
 import { ReservationFilterOptions } from '../utils/reservationFilters';
 import { ReservationFilter } from '../utils/reservationFilters';
+import { PaymentService } from '../interfaces/services/paymentService';
+// Importamos el DTO
+import { Op } from 'sequelize';
 
 export class ReservationServiceImpl implements ReservationService {
   constructor(
     private propertyAvailabilityService: PropertyAvailabilityService,
     private countryService: CountryService,
     private propertyService: PropertyService,
+    private paymentService: PaymentService,
   ) {}
   async createReservation(data: ReservationRequest): Promise<InstanceType<typeof Reservation>> {
     if (!data) throw Error('Data incorrecta, DTO vacio');
@@ -101,8 +105,10 @@ export class ReservationServiceImpl implements ReservationService {
   }
   // Método ficticio para procesar el reembolso a través del sistema de pagos
   private async processRefund(email: string, amount: number): Promise<void> {
-    // Aquí iría la lógica para interactuar con el sistema de pagos y procesar el reembolso
-    console.log(`Procesando reembolso de ${amount} para ${email}`);
+    const success = await this.paymentService.processRefund(email, amount);
+    if (!success) {
+      throw new Error('No se pudo procesar la devolucion del pago correctamente vuelva a intentar');
+    }
   }
 
   private async checkAvailability(propertyId: number, startDate: string, endDate: string): Promise<boolean> {
@@ -120,5 +126,17 @@ export class ReservationServiceImpl implements ReservationService {
     // Validar cantidad de personas
     const totalCapacity = numberOfAdults + numberOfKids;
     return adults + children <= totalCapacity;
+  }
+  async paymentCorrect(reservationId: number, email: string, totalPaid: number): Promise<void> {
+    const success = await this.paymentService.processPayment(email, totalPaid);
+    if (success) {
+      await Reservation.update(
+        { status: 'Paid', amountPaid: totalPaid }, // Asumiendo que 1.0 representa el pago completo
+        { where: { id: reservationId } },
+        //await this.propertyAvailabilityService.updateAvailability(reservationId, false); a chequear
+      );
+    } else {
+      throw new Error('No se pudo procesar el pago correctamente vuelva a intentar');
+    }
   }
 }
