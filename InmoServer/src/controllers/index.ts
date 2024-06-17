@@ -13,16 +13,17 @@ import { ServiceTypeController } from './sensorServiceTypeController';
 import { ServiceTypeServiceImpl } from '../services/sensorServiceTypeService';
 import { AuthController } from './authController';
 import { UserService } from '../services/authService';
+import { PaymentServiceImpl } from '../services/paymentService';
 import { LogService } from '../services/logsService';
 import { LogController } from './logsController';
-
 
 // Instanciar las implementaciones de los servicios
 const queueService = new QueueServiceImpl();
 const propertyService = new PropertyServiceImpl();
 const propertyAvailabilityService = new PropertyAvailabilityServiceImpl();
 const countryService = new CountryServiceImpl();
-const reservationService = new ReservationServiceImpl(propertyAvailabilityService, countryService, propertyService);
+const paymentService = new PaymentServiceImpl();
+const reservationService = new ReservationServiceImpl(propertyAvailabilityService, countryService, propertyService, paymentService);
 const serviceTypeService = new ServiceTypeServiceImpl();
 const sensorService = new SensorServiceImpl(serviceTypeService, propertyService);
 const userService = new UserService();
