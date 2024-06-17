@@ -11,7 +11,7 @@ import { SensorController } from './sensorController';
 import { SensorServiceImpl } from '../services/sensorService';
 import { ServiceTypeController } from './sensorServiceTypeController';
 import { ServiceTypeServiceImpl } from '../services/sensorServiceTypeService';
-import { IncidentService } from '../incident-service/incidentService';
+import { IncidentServiceImpl } from '../incident-service/incidentService';
 import { AuthController } from './authController';
 import { UserService } from '../services/authService';
 import { LogService } from '../services/logsService';
@@ -30,7 +30,7 @@ const sensorService = new SensorServiceImpl(serviceTypeService, propertyService)
 const userService = new UserService();
 const logService = new LogService();
 const notificationService = new NotificationServiceImpl();
-const incidentService = new IncidentService(sensorService, serviceTypeService, notificationService, propertyService, queueService);
+const incidentService = new IncidentServiceImpl(sensorService, serviceTypeService, notificationService, propertyService, queueService);
 
 // Inicializar las queues de escucha
 incidentService.init();

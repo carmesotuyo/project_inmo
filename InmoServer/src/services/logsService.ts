@@ -1,4 +1,5 @@
-import Log, { LogDocument } from '../data-access/logs';
+import { LogDocument } from '../data-access/logs';
+import { Log } from '../config/mongoConnections';
 
 export class LogService {
   async getLogs(): Promise<LogDocument[]> {

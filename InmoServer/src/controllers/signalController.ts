@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { IncidentService } from '../incident-service/incidentService';
+import { IncidentService } from '../interfaces/services/incidentService';
 
 export class SignalController {
   constructor(private signalService: IncidentService) {}

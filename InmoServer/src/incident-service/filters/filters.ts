@@ -5,6 +5,7 @@ import { NotificationRequest, NotificationPriority, NotificationType } from '../
 import { PropertyService } from '../../interfaces/services/propertyService';
 import { SensorData, DataToReport } from '../types/sensorData';
 import { QueueService } from '../../interfaces/services/queueService';
+import { Signal } from '../../config/mongoConnections';
 
 export class Filters {
   constructor(
@@ -30,7 +31,14 @@ export class Filters {
     }
   };
 
-  //guardar en BD
+  public saveSignalToDB = async (input: SensorData): Promise<SensorData> => {
+    try {
+      const signal = new Signal(input);
+      return await signal.save();
+    } catch (error: any) {
+      throw new Error(`Error saving signal: ${error.message}`);
+    }
+  };
 
   public validateValuesRange = async (input: SensorData): Promise<SensorData> => {
     try {

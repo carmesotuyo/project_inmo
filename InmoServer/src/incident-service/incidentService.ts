@@ -9,11 +9,13 @@ import { NotificationService } from '../interfaces/services/notificationService'
 import { SensorData } from './types/sensorData';
 import { PropertyService } from '../interfaces/services/propertyService';
 import { QueueService } from '../interfaces/services/queueService';
-import Signal, { SignalDocument } from '../data-access/signal';
+import { SignalDocument } from '../data-access/signal';
+import { Signal } from '../config/mongoConnections';
+import { IncidentService } from '../interfaces/services/incidentService';
 
 dotenv.config();
 
-export class IncidentService {
+export class IncidentServiceImpl implements IncidentService {
   private pipeline: Pipeline<SensorData>;
 
   constructor(
@@ -25,7 +27,7 @@ export class IncidentService {
   ) {
     const queueFactory = QueueFactory.getQueueFactory<SensorData>;
     const filtersInit = new Filters(this.sensorService, this.serviceType, this.notificationService, this.propertyService, this.queueService);
-    this.pipeline = new Pipeline<SensorData>([filtersInit.verifyPropertyAndSensorExist, filtersInit.validateValuesRange, filtersInit.validateAlertRange, filtersInit.notify], queueFactory);
+    this.pipeline = new Pipeline<SensorData>([filtersInit.verifyPropertyAndSensorExist, filtersInit.saveSignalToDB, filtersInit.validateValuesRange, filtersInit.validateAlertRange, filtersInit.notify], queueFactory);
 
     this.pipeline.on('finalOutput', this.handleFinalOutput);
     this.pipeline.on('errorInFilter', this.handleErrorInFilter);
@@ -90,15 +92,19 @@ export class IncidentService {
 
   async getSignals(): Promise<SignalDocument[]> {
     try {
-      const signals = await Signal.find().sort({ timestamp: -1 }).exec();
+      const signals = await Signal.find().sort({ dateTime: -1 }).exec();
       return signals;
     } catch (error: any) {
       throw new Error(`Error fetching signals: ${error.message}`);
     }
   }
 
-  async createSignal(signalData: typeof Signal): Promise<InstanceType<typeof Signal>> {
-    const signal = new Signal(signalData);
-    return await signal.save();
+  async createSignal(signalData: SignalDocument): Promise<SignalDocument> {
+    try {
+      const signal = new Signal(signalData);
+      return await signal.save();
+    } catch (error: any) {
+      throw new Error(`Error saving signal: ${error.message}`);
+    }
   }
 }
