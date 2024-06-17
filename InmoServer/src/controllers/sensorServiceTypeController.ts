@@ -1,13 +1,9 @@
 import { Request, Response } from 'express';
 import { ServiceTypeService } from '../interfaces/services/sensorServiceType';
-import { QueueService } from '../interfaces/services/queueService';
 import { getErrorMessage } from '../utils/handleError';
 
 export class ServiceTypeController {
-  constructor(
-    private serviceTypeService: ServiceTypeService,
-    private queueService: QueueService,
-  ) {}
+  constructor(private serviceTypeService: ServiceTypeService) {}
 
   async createServiceType(req: Request, res: Response): Promise<void> {
     try {
