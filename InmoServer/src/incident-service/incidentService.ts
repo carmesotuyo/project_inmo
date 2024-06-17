@@ -9,6 +9,7 @@ import { NotificationService } from '../interfaces/services/notificationService'
 import { SensorData } from './types/sensorData';
 import { PropertyService } from '../interfaces/services/propertyService';
 import { QueueService } from '../interfaces/services/queueService';
+import Signal, { SignalDocument } from '../data-access/signal';
 
 dotenv.config();
 
@@ -85,5 +86,19 @@ export class IncidentService {
     console.error(`Failed to process ${data.sensorId} ${data.dateTime}`);
     console.error(`Error in filter: ${error}, Data: ${errorData}`);
     console.log(`==========================================================`);
+  }
+
+  async getSignals(): Promise<SignalDocument[]> {
+    try {
+      const signals = await Signal.find().sort({ timestamp: -1 }).exec();
+      return signals;
+    } catch (error: any) {
+      throw new Error(`Error fetching signals: ${error.message}`);
+    }
+  }
+
+  async createSignal(signalData: typeof Signal): Promise<InstanceType<typeof Signal>> {
+    const signal = new Signal(signalData);
+    return await signal.save();
   }
 }
