@@ -59,4 +59,59 @@ export const getOccupancyRate = async (startDate: Date, endDate: Date, district:
 };
 
 
+export const getPropertiesWithMostProblems = async (startDate: Date, endDate: Date, district: string, countryId: string) => {
+  try {
+    const properties = await Property.find({ district, countryId });
+    const propertyIds = properties.map(p => p.id);
 
+    const incidents = await Incident.aggregate([
+      { $match: { propertyId: { $in: propertyIds }, date: { $gte: startDate, $lte: endDate } } },
+      { $group: { _id: { propertyId: '$propertyId', incident: '$incident' }, count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $group: { _id: '$_id.propertyId', incidents: { $push: { incident: '$_id.incident', count: '$count' } }, total: { $sum: '$count' } } },
+      { $sort: { total: -1 } },
+      { $limit: 15 }
+    ]);
+
+    const result = await Promise.all(incidents.map(async (incident) => {
+      const property = await Property.findOne({ id: incident._id });
+      if (!property) return null;
+
+      return {
+        Inmueble: incident._id,
+        Nombre: property.name,
+        Barrio: property.neighborhood,
+        Balneario: property.district,
+        Problemas: incident.incidents.slice(0, 2).map((i: any) => ({
+          Problema: i.incident,
+          Ocurrencias: i.count
+        }))
+      };
+    }));
+
+    const filteredResult = result.filter(item => item !== null);
+
+    return filteredResult;
+  } catch (error) {
+    console.error('Error fetching properties with most problems:', error);
+    throw error;
+  }
+};
+
+export const getReservations = async () => {
+  try {
+    return await Reservation.find();
+  } catch (error) {
+    console.error('Error fetching reservations:', error);
+    throw error;
+  }
+};
+
+export const getProperties = async () => {
+  try {
+    return await Property.find();
+  } catch (error) {
+    console.error('Error fetching properties:', error);
+    throw error;
+  }
+};
