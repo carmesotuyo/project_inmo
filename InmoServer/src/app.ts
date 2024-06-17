@@ -1,5 +1,5 @@
 import { sequelize, dbSync } from './config/database';
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 import express from 'express';
 import bodyParser from 'body-parser';
 import authRoutes from './routes/auhtRoutes';
@@ -29,7 +29,7 @@ app.use('/api', logRoutes);
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI as string)
+    await mongoose.connect(process.env.MONGO_URI as string);
     console.log('MongoDB connected');
     logger.info('MongoDB connected');
   } catch (error) {
