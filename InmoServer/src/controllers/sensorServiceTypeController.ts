@@ -12,8 +12,6 @@ export class ServiceTypeController {
   async createServiceType(req: Request, res: Response): Promise<void> {
     try {
       const serviceType = await this.serviceTypeService.createServiceType(req.body);
-      // TODO sacar esto
-      //this.queueService.addJobToQueue(serviceType.toJSON());
       res.status(201).json(serviceType);
     } catch (error) {
       res.status(400).json({

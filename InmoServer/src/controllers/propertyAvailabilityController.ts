@@ -13,8 +13,6 @@ export class PropertyAvailabilityController {
   public createAvailability = async (req: Request, res: Response) => {
     try {
       const availability = await this.propertyAvailabilityService.createAvailability(req.body);
-      // TODO sacar esto
-      //this.queueService.addJobToQueue("property", availability.toJSON());
       logger.info(`Availability created - property: ${availability.get('propertyId')}`);
       res.status(201).json(availability);
     } catch (error: any) {
@@ -33,8 +31,6 @@ export class PropertyAvailabilityController {
       if (!availability) {
         return res.status(404).json({ message: 'Availability not found' });
       }
-      // TODO sacar esto
-      //this.queueService.addJobToQueue("property", availability.toJSON());
       logger.info(`Availability updated - id: ${id}`);
       res.status(200).json(availability);
     } catch (error: any) {

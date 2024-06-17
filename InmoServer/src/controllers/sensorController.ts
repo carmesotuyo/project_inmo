@@ -14,8 +14,6 @@ export class SensorController {
   async createSensor(req: Request, res: Response): Promise<void> {
     try {
       const sensor = await this.sensorService.createSensor(req.body);
-      // TODO sacar esto
-      //this.queueService.addJobToQueue(sensor.toJSON());
       logger.info(`Sensor created - name: ${sensor.get('name')}`);
       res.status(201).json(sensor);
     } catch (error) {
@@ -31,8 +29,6 @@ export class SensorController {
     try {
       const { sensorId, propertyId } = req.body;
       const propertySensor = await this.sensorService.assignToProperty(sensorId, propertyId);
-      // TODO sacar esto
-      //this.queueService.addJobToQueue(propertySensor.toJSON());
       logger.info(`Sensor assigned to property - sensor: ${sensorId} - property: ${propertyId}`);
       res.status(200).json({ message: 'Sensor assigned to property successfully' });
     } catch (error) {
@@ -48,8 +44,6 @@ export class SensorController {
     try {
       const { id } = req.params;
       const observableProperties = await this.sensorService.getObservableProperties(id);
-      // TODO sacar esto
-      //this.queueService.addJobToQueue(observableProperties);
       res.status(200).json({ message: observableProperties });
     } catch (error) {
       res.status(400).json({
@@ -63,8 +57,6 @@ export class SensorController {
     try {
       const { id } = req.params;
       const updatedSensor = await this.sensorService.updateSensor(id, req.body);
-      // TODO sacar esto
-      //this.queueService.addJobToQueue(updatedSensor.toJSON());
       logger.info(`Sensor updated - id: ${id}`);
       res.status(200).json({ message: updatedSensor });
     } catch (error) {
