@@ -11,11 +11,14 @@ import { SensorController } from './sensorController';
 import { SensorServiceImpl } from '../services/sensorService';
 import { ServiceTypeController } from './sensorServiceTypeController';
 import { ServiceTypeServiceImpl } from '../services/sensorServiceTypeService';
+import { IncidentServiceImpl } from '../incident-service/incidentService';
 import { AuthController } from './authController';
 import { UserService } from '../services/authService';
 import { PaymentServiceImpl } from '../services/paymentService';
 import { LogService } from '../services/logsService';
 import { LogController } from './logsController';
+import { NotificationServiceImpl } from '../notification-service/notificationService';
+import { SignalController } from './signalController';
 
 // Instanciar las implementaciones de los servicios
 const queueService = new QueueServiceImpl();
@@ -28,13 +31,19 @@ const serviceTypeService = new ServiceTypeServiceImpl();
 const sensorService = new SensorServiceImpl(serviceTypeService, propertyService);
 const userService = new UserService();
 const logService = new LogService();
+const notificationService = new NotificationServiceImpl();
+const incidentService = new IncidentServiceImpl(sensorService, serviceTypeService, notificationService, propertyService, queueService);
+
+// Inicializar las queues de escucha
+incidentService.init();
 
 // Instanciar el controlador con las implementaciones concretas de los servicios
 export const propertyController = new PropertyController(propertyService, queueService);
 export const reservationController = new ReservationController(reservationService, queueService);
-export const countryController = new CountryController(countryService, queueService);
-export const propertyAvailabilityController = new PropertyAvailabilityController(propertyAvailabilityService, queueService);
-export const sensorController = new SensorController(sensorService, queueService);
-export const serviceTypeController = new ServiceTypeController(serviceTypeService, queueService);
+export const countryController = new CountryController(countryService);
+export const propertyAvailabilityController = new PropertyAvailabilityController(propertyAvailabilityService);
+export const sensorController = new SensorController(sensorService);
+export const serviceTypeController = new ServiceTypeController(serviceTypeService);
 export const authController = new AuthController(userService);
 export const logController = new LogController(logService);
+export const signalController = new SignalController(incidentService);

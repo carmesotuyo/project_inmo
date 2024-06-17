@@ -1,14 +1,10 @@
 import { Request, Response } from 'express';
 import { PropertyAvailabilityService } from '../interfaces/services/propertyAvailabilityService';
-import { QueueService } from '../interfaces/services/queueService';
 import { getErrorMessage } from '../utils/handleError';
 import logger from '../config/logger';
 
 export class PropertyAvailabilityController {
-  constructor(
-    private propertyAvailabilityService: PropertyAvailabilityService,
-    private queueService: QueueService,
-  ) {}
+  constructor(private propertyAvailabilityService: PropertyAvailabilityService) {}
 
   public createAvailability = async (req: Request, res: Response) => {
     try {

@@ -29,6 +29,7 @@ export class SensorServiceImpl implements SensorService {
   }
 
   async getObservableProperties(sensorId: string): Promise<JSON> {
+    if (!this.existsSensor(sensorId)) throw new Error('Sensor does not exist: ' + sensorId);
     const sensor = await this.getSensor(sensorId);
     const observableProperties = sensor.get('observableProperties') as JSON;
     if (!observableProperties) throw new Error('Observable properties not defined');
@@ -43,5 +44,9 @@ export class SensorServiceImpl implements SensorService {
     const sensor = await Sensor.findByPk(sensorId);
     if (!sensor) throw new Error('Sensor not found');
     return sensor;
+  }
+
+  async existsSensor(sensorId: string): Promise<boolean> {
+    return Sensor.findByPk(sensorId) != null;
   }
 }

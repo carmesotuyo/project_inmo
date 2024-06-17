@@ -14,6 +14,10 @@ export const SensorServiceType = sequelize.define(
       allowNull: false,
       unique: true,
     },
+    priority: {
+      type: DataTypes.ENUM('Low', 'Medium', 'High'),
+      allowNull: false,
+    },
   },
   {
     tableName: 'ServiceTypes',

@@ -1,14 +1,10 @@
 import { Request, Response } from 'express';
 import { CountryService } from '../interfaces/services/countryService';
-import { QueueService } from '../interfaces/services/queueService';
 import { getErrorMessage } from '../utils/handleError';
 import logger from '../config/logger';
 
 export class CountryController {
-  constructor(
-    private countryService: CountryService,
-    private queueService: QueueService,
-  ) {}
+  constructor(private countryService: CountryService) {}
 
   public createCountry = async (req: Request, res: Response) => {
     try {

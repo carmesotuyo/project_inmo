@@ -11,7 +11,7 @@ const logger = winston.createLogger({
     new winston.transports.Console(),
     new winston.transports.MongoDB({
       level: 'info',
-      db: process.env.MONGO_URI!,
+      db: process.env.LOGS_MONGO_URI!,
       options: {
         useNewUrlParser: true,
         useUnifiedTopology: true,
