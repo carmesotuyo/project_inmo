@@ -26,12 +26,12 @@ export const getIncomeByProperty = async (propertyId: number, startDate: Date, e
 export const getOccupancyRate = async (startDate: Date, endDate: Date, district: string, countryId: string) => {
   try {
     const properties = await Property.find({ district, countryId });
-    const propertyIds = properties.map(p => p.id);
+    const propertyIds = properties.map((p) => p.id);
 
     const reservations = await Reservation.find({
       propertyId: { $in: propertyIds },
       startDate: { $gte: startDate },
-      endDate: { $lte: endDate }
+      endDate: { $lte: endDate },
     });
 
     const groupedByNeighborhood = properties.reduce<Record<string, NeighborhoodStats>>((acc, property) => {
@@ -40,15 +40,15 @@ export const getOccupancyRate = async (startDate: Date, endDate: Date, district:
         acc[neighborhood] = { count: 0, rentedCount: 0 };
       }
       acc[neighborhood].count += 1;
-      acc[neighborhood].rentedCount += reservations.filter(r => r.propertyId === property.id).length;
+      acc[neighborhood].rentedCount += reservations.filter((r) => r.propertyId === property.id).length;
       return acc;
     }, {});
 
-    const occupancyRates = Object.keys(groupedByNeighborhood).map(neighborhood => ({
+    const occupancyRates = Object.keys(groupedByNeighborhood).map((neighborhood) => ({
       neighborhood,
       totalProperties: groupedByNeighborhood[neighborhood].count,
       rentedProperties: groupedByNeighborhood[neighborhood].rentedCount,
-      occupancyRate: groupedByNeighborhood[neighborhood].rentedCount / groupedByNeighborhood[neighborhood].count
+      occupancyRate: groupedByNeighborhood[neighborhood].rentedCount / groupedByNeighborhood[neighborhood].count,
     }));
 
     return occupancyRates.sort((a, b) => b.occupancyRate - a.occupancyRate);
@@ -58,11 +58,10 @@ export const getOccupancyRate = async (startDate: Date, endDate: Date, district:
   }
 };
 
-
 export const getPropertiesWithMostProblems = async (startDate: Date, endDate: Date, district: string, countryId: string) => {
   try {
     const properties = await Property.find({ district, countryId });
-    const propertyIds = properties.map(p => p.id);
+    const propertyIds = properties.map((p) => p.id);
 
     const incidents = await Incident.aggregate([
       { $match: { propertyId: { $in: propertyIds }, date: { $gte: startDate, $lte: endDate } } },
@@ -70,26 +69,28 @@ export const getPropertiesWithMostProblems = async (startDate: Date, endDate: Da
       { $sort: { count: -1 } },
       { $group: { _id: '$_id.propertyId', incidents: { $push: { incident: '$_id.incident', count: '$count' } }, total: { $sum: '$count' } } },
       { $sort: { total: -1 } },
-      { $limit: 15 }
+      { $limit: 15 },
     ]);
 
-    const result = await Promise.all(incidents.map(async (incident) => {
-      const property = await Property.findOne({ id: incident._id });
-      if (!property) return null;
+    const result = await Promise.all(
+      incidents.map(async (incident) => {
+        const property = await Property.findOne({ id: incident._id });
+        if (!property) return null;
 
-      return {
-        Inmueble: incident._id,
-        Nombre: property.name,
-        Barrio: property.neighborhood,
-        Balneario: property.district,
-        Problemas: incident.incidents.slice(0, 2).map((i: any) => ({
-          Problema: i.incident,
-          Ocurrencias: i.count
-        }))
-      };
-    }));
+        return {
+          Inmueble: incident._id,
+          Nombre: property.name,
+          Barrio: property.neighborhood,
+          Balneario: property.district,
+          Problemas: incident.incidents.slice(0, 2).map((i: any) => ({
+            Problema: i.incident,
+            Ocurrencias: i.count,
+          })),
+        };
+      }),
+    );
 
-    const filteredResult = result.filter(item => item !== null);
+    const filteredResult = result.filter((item) => item !== null);
 
     return filteredResult;
   } catch (error) {
