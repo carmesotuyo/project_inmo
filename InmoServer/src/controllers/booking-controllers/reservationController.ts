@@ -93,9 +93,10 @@ export class ReservationController {
       }
 
       await this.reservationService.paymentCorrect(reservationId, email, totalPaid);
-
+      logger.info(`Payment processed - reservationId: ${reservationId}`);
       res.status(200).json({ message: 'Pago procesado correctamente' });
     } catch (error: any) {
+      logger.error('Error processing payment', { error: getErrorMessage(error) });
       res.status(400).json({
         message: 'Error procesando el pago',
         error: getErrorMessage(error),
