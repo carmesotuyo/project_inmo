@@ -15,4 +15,5 @@ export interface PropertyResponse {
     district: string;
     neighborhood: string;
     images: string;
+    availability: string[];
   }
