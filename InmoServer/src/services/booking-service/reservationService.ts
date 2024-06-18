@@ -130,8 +130,7 @@ export class ReservationServiceImpl implements ReservationService {
     if (success) {
       await Reservation.update(
         { status: 'Paid', amountPaid: totalPaid }, // Asumiendo que 1.0 representa el pago completo
-        { where: { id: reservationId } },
-        //await this.propertyAvailabilityService.updateAvailability(reservationId, false); a chequear
+        { where: { id: reservationId } }
       );
     } else {
       throw new Error('No se pudo procesar el pago correctamente vuelva a intentar');
