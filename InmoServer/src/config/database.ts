@@ -10,6 +10,7 @@ const sequelize = new Sequelize(process.env.DB_NAME!, process.env.DB_USER!, proc
   dialectOptions: {
     connectTimeout: 60000,
   },
+  logging: false,
 });
 
 import { setRelationships } from '../data-access/relationships';
