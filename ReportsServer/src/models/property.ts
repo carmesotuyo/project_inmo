@@ -39,7 +39,7 @@ const PropertySchema: Schema = new Schema({
   district: { type: String, required: true },
   neighborhood: { type: String, required: true },
   images: { type: String, required: true },
-  reducedImages: { type: String, required: true },
+  reducedImages: { type: String, required: false },
   pricePerNight: { type: Number, required: true },
   status: { type: String, required: true }
 });
