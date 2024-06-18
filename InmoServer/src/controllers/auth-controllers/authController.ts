@@ -23,8 +23,6 @@ export class AuthController {
 
       const { access_token } = tokenResponse.data;
 
-      console.log('Access token:', access_token);
-
       // Verificar token con Auth0
       const userInfoResponse = await axios.get(`https://${process.env.AUTH0_DOMAIN}/userinfo`, {
         headers: {
