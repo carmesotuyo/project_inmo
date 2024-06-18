@@ -7,4 +7,5 @@ export interface PropertyService {
   getPropertyByID(id: number): Promise<InstanceType<typeof Property>>;
   searchProperties(filters: PropertyFilterOptions): Promise<{ properties: InstanceType<typeof Property>[]; total: number }>;
   existsProperty(id: number): Promise<boolean>;
+  getAllProperties(): Promise<InstanceType<typeof Property>[]>;
 }
