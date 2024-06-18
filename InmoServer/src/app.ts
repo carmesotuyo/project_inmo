@@ -1,6 +1,4 @@
 import { sequelize, dbSync } from './config/database';
-import mongoose from 'mongoose';
-import mongoose from 'mongoose';
 import express from 'express';
 import bodyParser from 'body-parser';
 import authRoutes from './routes/auhtRoutes';
