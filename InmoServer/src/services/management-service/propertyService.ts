@@ -16,7 +16,13 @@ export class PropertyServiceImpl implements PropertyService {
       const propertyFilter = new PropertyFilter(filters);
       const whereClause = await propertyFilter.buildWhereClause();
 
-      const { limit = 10, offset = 0, startDate, endDate } = filters;
+      let { limit = 10, page = 1, startDate, endDate } = filters;
+
+      // Validación de parámetros de paginación
+      limit = Math.max(1, Math.min(limit, 100));
+      page = Math.max(1, page);
+
+      const offset = (page - 1) * limit;
 
       const { count, rows } = await Property.findAndCountAll({
         where: whereClause,
@@ -29,7 +35,7 @@ export class PropertyServiceImpl implements PropertyService {
         const propertyData = property.toJSON();
 
         if (!startDate || !endDate) {
-          // Si no se ingresa rango de fechas, se debe calcular disponibilidad para los próximos 30 días
+          // Si no se ingresa rango de fechas, calcular disponibilidad para los próximos 30 días
           const today = new Date();
           const next30Days = Array.from({ length: 30 }, (_, i) => {
             const date = new Date();
@@ -37,8 +43,8 @@ export class PropertyServiceImpl implements PropertyService {
             return date.toISOString().split('T')[0];
           });
 
-          const unavailableDates = propertyData.availabilities
-            .map((availability: any) => {
+          const unavailableDates = new Set(
+            propertyData.availabilities.flatMap((availability: any) => {
               const dates = [];
               let currentDate = new Date(availability.startDate);
               while (currentDate <= new Date(availability.endDate)) {
@@ -46,12 +52,12 @@ export class PropertyServiceImpl implements PropertyService {
                 currentDate.setDate(currentDate.getDate() + 1);
               }
               return dates;
-            })
-            .flat();
+            }),
+          );
 
           propertyData.availabilityCalendar = next30Days.map((date) => ({
             date,
-            available: !unavailableDates.includes(date),
+            available: !unavailableDates.has(date),
           }));
         } else {
           // Verificar disponibilidad en el rango de fechas proporcionado
@@ -71,6 +77,10 @@ export class PropertyServiceImpl implements PropertyService {
     } catch (error: any) {
       throw new Error(`Error searching property: ${error.message}`);
     }
+  }
+
+  async getAllProperties(): Promise<InstanceType<typeof Property>[]> {
+    return await Property.findAll();
   }
 
   async createProperty(data: PropertyRequest): Promise<InstanceType<typeof Property>> {

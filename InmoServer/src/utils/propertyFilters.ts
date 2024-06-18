@@ -17,7 +17,7 @@ export interface PropertyFilterOptions {
   resort?: string;
   neighborhood?: string;
   limit?: number;
-  offset?: number;
+  page?: number;
 }
 
 export class PropertyFilter {
