@@ -17,6 +17,7 @@ export interface IProperty extends Document {
   district: string;
   neighborhood: string;
   images: string;
+  reducedImages: string;
   pricePerNight: number;
   status: string;
 }
@@ -38,6 +39,7 @@ const PropertySchema: Schema = new Schema({
   district: { type: String, required: true },
   neighborhood: { type: String, required: true },
   images: { type: String, required: true },
+  reducedImages: { type: String, required: true },
   pricePerNight: { type: Number, required: true },
   status: { type: String, required: true }
 });
