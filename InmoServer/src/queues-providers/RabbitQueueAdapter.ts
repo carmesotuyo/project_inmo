@@ -1,5 +1,6 @@
 import { Channel, connect, Connection } from 'amqplib';
-import { IQueue } from '../../../interfaces/queues/IQueue';
+import { IQueue } from '../interfaces/queues/IQueue';
+import { connectRabbitMQ } from '../config/queueConnections';
 
 export class RabbitMQQueueAdapter<T> implements IQueue<T> {
   private connection: Promise<Connection>;
@@ -8,9 +9,7 @@ export class RabbitMQQueueAdapter<T> implements IQueue<T> {
 
   constructor(queueName: string) {
     this.queueName = queueName;
-    // Establece la conexión con RabbitMQ. Aquí se asume que RabbitMQ corre en localhost.
-    // Modifica la URL según sea necesario, incluyendo credenciales si es necesario.
-    this.connection = connect('amqp://user:password@localhost');
+    this.connection = connectRabbitMQ();
     this.channel = this.connection.then((conn) => conn.createChannel());
     this.channel.then((ch) => ch.assertQueue(queueName));
   }

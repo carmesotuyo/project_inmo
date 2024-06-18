@@ -1,5 +1,5 @@
-import { BullQueueAdapter } from '../queues-providers/BullQueueAdapter';
-import { RabbitMQQueueAdapter } from '../queues-providers/RabbitQueueAdapter';
+import { BullQueueAdapter } from '../../../queues-providers/BullQueueAdapter';
+import { RabbitMQQueueAdapter } from '../../../queues-providers/RabbitQueueAdapter';
 import { IQueue } from '../../../interfaces/queues/IQueue';
 
 export class QueueFactory {

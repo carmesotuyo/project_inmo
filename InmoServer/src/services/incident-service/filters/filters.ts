@@ -1,7 +1,7 @@
 import { ServiceTypeService } from '../../../interfaces/services/sensorServiceType';
 import { SensorService } from '../../../interfaces/services/sensorService';
 import { NotificationService } from '../../../interfaces/services/notificationService';
-import { NotificationRequest, NotificationPriority, NotificationType } from '../../../dtos/notificationRequest';
+import { NotificationRequest, NotificationPriority } from '../../../dtos/notificationRequest';
 import { PropertyService } from '../../../interfaces/services/propertyService';
 import { SensorData, DataToReport } from '../types/sensorData';
 import { QueueService } from '../../../interfaces/services/queueService';
@@ -34,7 +34,8 @@ export class Filters {
   public saveSignalToDB = async (input: SensorData): Promise<SensorData> => {
     try {
       const signal = new Signal(input);
-      return await signal.save();
+      await signal.save();
+      return input;
     } catch (error: any) {
       throw new Error(`Error saving signal: ${error.message}`);
     }
@@ -77,7 +78,7 @@ export class Filters {
         const [type, priority] = await this.checkTypeAndPriority(input);
         const { propertyKey, propertyValue } = await this.extractKeyValue(input);
         const [propertyId, sensorId] = await this.getPropertyAndSensorIds(input);
-        const notifRequest: NotificationRequest = { type: type, propertyId: propertyId, priority: priority, message: propertyKey + propertyValue }; //check format of notification
+        const notifRequest: NotificationRequest = { type: type, propertyId: propertyId, priority: priority, message: propertyKey + '#' + propertyValue };
         notificationResult = await this.notificationService.notify(notifRequest);
 
         const dataToReport: DataToReport = { propertyId: propertyId, incident: propertyValue, date: new Date(input.dateTime) };
@@ -111,11 +112,13 @@ export class Filters {
     if (input.sensorId.includes('APP')) {
       // en el caso de la app es APP.propertyId
       const [sensorId, propertyId] = input.sensorId.split('.'); //tomamos APP como sensorId
+      if (!propertyId) throw new Error('Sensor ID provided does not have correct format: ' + input.sensorId);
       const parsedProperty = Number.parseInt(propertyId.trim());
       if (!parsedProperty) throw new Error('Property ID is not a valid number: ' + propertyId);
       return [parsedProperty, sensorId.trim()]; //los retornamos en orden
     } else {
       const [propertyId, sensorId] = input.sensorId.split('.');
+      if (!sensorId) throw new Error('Sensor ID provided does not have correct format: ' + input.sensorId);
       const parsedProperty = Number.parseInt(propertyId.trim());
       if (!parsedProperty) throw new Error('Property ID is not a valid number: ' + propertyId);
       return [parsedProperty, sensorId.trim()];

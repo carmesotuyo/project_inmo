@@ -16,8 +16,6 @@ export class PropertyServiceImpl implements PropertyService {
       const propertyFilter = new PropertyFilter(filters);
       const whereClause = await propertyFilter.buildWhereClause();
 
-      console.log('Generated Where Clause:', whereClause); // Agrega este mensaje de depuración
-
       const { limit = 10, offset = 0, startDate, endDate } = filters;
 
       const { count, rows } = await Property.findAndCountAll({
@@ -26,8 +24,6 @@ export class PropertyServiceImpl implements PropertyService {
         offset,
         include: [{ model: PropertyAvailability, as: 'availabilities' }],
       });
-
-      console.log('Number of Properties Found:', count); // Agrega este mensaje de depuración
 
       const properties = rows.map((property) => {
         const propertyData = property.toJSON();

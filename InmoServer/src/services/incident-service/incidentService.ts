@@ -12,6 +12,7 @@ import { QueueService } from '../../interfaces/services/queueService';
 import { SignalDocument } from '../../data-access/signal';
 import { Signal } from '../../config/mongoConnections';
 import { IncidentService } from '../../interfaces/services/incidentService';
+import { connectRabbitMQ } from '../../config/queueConnections';
 
 dotenv.config();
 
@@ -42,12 +43,7 @@ export class IncidentServiceImpl implements IncidentService {
   private connectToRabbitMQ = async (retryCount = 0) => {
     const MAX_RETRIES = 5;
     try {
-      const connection = await connect({
-        hostname: process.env.RABBITMQ_HOST || 'localhost',
-        port: Number(process.env.RABBITMQ_PORT) || 5672,
-        username: process.env.RABBITMQ_USER || 'guest',
-        password: process.env.RABBITMQ_PASSWORD || 'guest',
-      });
+      const connection = await connectRabbitMQ();
       const channel = await connection.createChannel();
       const exchange = 'sensor_data_exchange';
       await channel.assertExchange(exchange, 'fanout', { durable: false });
