@@ -1,9 +1,11 @@
 import { PropertyRequest } from '../../dtos/propertyRequest';
+import { PropertyResponse } from '../../dtos/propertyResponse';
 import { Property } from '../../data-access/property';
 import { PropertyService } from '../../interfaces/services/propertyService';
 import { PropertyAvailability } from '../../data-access/propertyAvailability';
 import { PropertyFilterOptions } from '../../utils/propertyFilters';
 import { PropertyFilter } from '../../utils/propertyFilters';
+import { reduceImages } from '../../utils/reducedImageAdapter';
 
 export class PropertyServiceImpl implements PropertyService {
   async getPropertyByID(id: number): Promise<InstanceType<typeof Property>> {
@@ -85,9 +87,34 @@ export class PropertyServiceImpl implements PropertyService {
 
   async createProperty(data: PropertyRequest): Promise<InstanceType<typeof Property>> {
     if (!data) throw Error('Data incorrecta, DTO vacio');
-    const propertyObject = { ...data, status: 'Pendiente de pago' };
+
+    const imagesArray = data.images.split(',');
+
+    // Validar que al menos haya 4 imágenes
+    if (imagesArray.length < 4) {
+      throw new Error('Debe proporcionar al menos 4 imágenes');
+    }
+
+    // Simular validación del tamaño de las imágenes
+    const maxImageSize = 500 * 1024; // 500 KB
+    const isValidSize = imagesArray.every((image) => image.length <= maxImageSize);
+    if (!isValidSize) {
+      throw new Error('Cada imagen debe ser menor a 500 KB');
+    }
+
+    // Llamar al servicio externo para reducir el tamaño de las imágenes
+    const reducedImages = await reduceImages(imagesArray);
+    const reducedImagesString = reducedImages.join(',');
+
+    const propertyObject = {
+      ...data,
+      status: 'Pendiente de pago',
+      reducedImages: reducedImagesString,
+    };
+
     return await Property.create(propertyObject);
   }
+
   async existsProperty(id: number): Promise<boolean> {
     return (await Property.findByPk(id)) != null;
   }
