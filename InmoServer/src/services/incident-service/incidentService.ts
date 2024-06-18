@@ -103,4 +103,68 @@ export class IncidentServiceImpl implements IncidentService {
       throw new Error(`Error saving signal: ${error.message}`);
     }
   }
+
+  async getRecentSignalsForProperty(propertyId: string): Promise<SignalDocument[]> {
+    try {
+      const signals = await Signal.aggregate([
+        {
+          $addFields: {
+            extractedPropertyId: {
+              $cond: {
+                if: { $regexMatch: { input: '$sensorId', regex: /^APP\./ } },
+                then: { $arrayElemAt: [{ $split: ['$sensorId', '.'] }, 1] },
+                else: { $arrayElemAt: [{ $split: ['$sensorId', '.'] }, 0] },
+              },
+            },
+          },
+        },
+        { $match: { extractedPropertyId: propertyId } },
+        { $sort: { sensorId: 1, dateTime: -1 } },
+        {
+          $project: {
+            sensorId: 1,
+            dateTime: 1,
+            dynamicFields: {
+              // es el tipo de señal recibida, el cual es dinamico
+              $objectToArray: '$$ROOT',
+            },
+          },
+        },
+        { $unwind: '$dynamicFields' },
+        {
+          $match: {
+            'dynamicFields.k': { $nin: ['_id', 'sensorId', 'dateTime', 'extractedPropertyId'] },
+          },
+        },
+        {
+          $group: {
+            _id: { sensorId: '$sensorId', type: '$dynamicFields.k' },
+            latestSignal: { $first: '$$ROOT' },
+          },
+        },
+        { $replaceRoot: { newRoot: '$latestSignal' } },
+        {
+          $project: {
+            sensorId: 1,
+            dateTime: 1,
+            type: '$dynamicFields.k',
+            value: '$dynamicFields.v',
+          },
+        },
+      ]).exec();
+
+      const formattedSignals = signals.map((signal) => {
+        const { sensorId, dateTime, type, value } = signal;
+        return {
+          sensorId,
+          dateTime,
+          [type]: value,
+        } as SignalDocument;
+      });
+
+      return formattedSignals;
+    } catch (error: any) {
+      throw new Error(`Error fetching signals: ${error.message}`);
+    }
+  }
 }
