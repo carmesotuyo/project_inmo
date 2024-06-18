@@ -12,7 +12,7 @@ export class NotificationServiceImpl implements NotificationService {
 
       await channel.assertExchange(exchange, 'topic', { durable: true });
 
-      const routingKey = `${notification.type}.${notification.priority}`;
+      const routingKey = `${notification.type}.${notification.priority}.${notification.propertyId}`;
       channel.publish(exchange, routingKey, Buffer.from(JSON.stringify(notification)));
 
       logger.info(`Notification of type ${notification.type} and priority ${notification.priority} for property ${notification.propertyId} sent: ${notification.message}`);
