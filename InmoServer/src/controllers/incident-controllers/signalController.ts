@@ -12,4 +12,14 @@ export class SignalController {
       res.status(500).json({ error: error.message });
     }
   };
+
+  public getRecentSignalsForProperty = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { propertyId } = req.params;
+      const signals = await this.signalService.getRecentSignalsForProperty(propertyId);
+      res.status(200).json(signals);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  };
 }
