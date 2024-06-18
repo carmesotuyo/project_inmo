@@ -25,9 +25,7 @@ import { PropertySensor } from '../data-access/propertySensor';
 
 const syncTables = async () => {
   try {
-    // Verifica si la sincronización está habilitada
     if (process.env.DB_SYNC === 'true') {
-      // Cambia 'force' a true si quieres que se borren y recreen las tablas
       await Country.sync();
       await Property.sync();
       await SensorServiceType.sync();
