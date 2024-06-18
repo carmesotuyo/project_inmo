@@ -17,34 +17,43 @@ export class PropertyServiceImpl implements PropertyService {
     try {
       const propertyFilter = new PropertyFilter(filters);
       const whereClause = await propertyFilter.buildWhereClause();
-
+  
       let { limit = 10, page = 1, startDate, endDate } = filters;
-
+  
       // Validación de parámetros de paginación
       limit = Math.max(1, Math.min(limit, 100));
       page = Math.max(1, page);
-
+  
       const offset = (page - 1) * limit;
-
+  
+      // Consulta para obtener propiedades con disponibilidad en el rango de fechas especificado
       const { count, rows } = await Property.findAndCountAll({
         where: whereClause,
         limit,
         offset,
         include: [{ model: PropertyAvailability, as: 'availabilities' }],
       });
-
-      const properties = rows.map((property) => {
-        const propertyData = property.toJSON();
-
-        if (!startDate || !endDate) {
-          // Si no se ingresa rango de fechas, calcular disponibilidad para los próximos 30 días
-          const today = new Date();
-          const next30Days = Array.from({ length: 30 }, (_, i) => {
-            const date = new Date();
-            date.setDate(today.getDate() + i);
-            return date.toISOString().split('T')[0];
-          });
-
+  
+      // Filtrar propiedades según su disponibilidad dentro del rango de fechas
+      const properties = rows
+        .filter((property: any) => {
+          // Verificar si la propiedad tiene disponibilidad en el rango de fechas
+          if (startDate && endDate) {
+            return property.availabilities.some((availability: any) => {
+              const start = new Date(startDate);
+              const end = new Date(endDate);
+              const availStart = new Date(availability.startDate);
+              const availEnd = new Date(availability.endDate);
+  
+              return availStart <= end && availEnd >= start;
+            });
+          }
+          return true; // Si no se especifica rango de fechas, mostrar todas las propiedades
+        })
+        .map((property) => {
+          const propertyData = property.toJSON();
+  
+          let availabilityCalendar: string[] = [];
           const unavailableDates = new Set(
             propertyData.availabilities.flatMap((availability: any) => {
               const dates = [];
@@ -56,22 +65,52 @@ export class PropertyServiceImpl implements PropertyService {
               return dates;
             }),
           );
-
-          propertyData.availabilityCalendar = next30Days.map((date) => ({
-            date,
-            available: !unavailableDates.has(date),
-          }));
-        } else {
-          // Verificar disponibilidad en el rango de fechas proporcionado
-          const available = propertyData.availabilities.some((availability: any) => {
-            return new Date(availability.startDate) <= new Date(startDate) && new Date(availability.endDate) >= new Date(endDate);
-          });
-          propertyData.available = available;
-        }
-
-        return propertyData;
-      });
-
+  
+          if (!startDate || !endDate) {
+            // Si no se ingresa rango de fechas, calcular disponibilidad para los próximos 30 días
+            const today = new Date();
+            const next30Days = Array.from({ length: 30 }, (_, i) => {
+              const date = new Date();
+              date.setDate(today.getDate() + i);
+              return date.toISOString().split('T')[0];
+            });
+  
+            availabilityCalendar = next30Days.filter((date) => unavailableDates.has(date));
+          } else {
+            // Verificar disponibilidad en el rango de fechas proporcionado
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const dateRange = [];
+            while (start <= end) {
+              dateRange.push(start.toISOString().split('T')[0]);
+              start.setDate(start.getDate() + 1);
+            }
+  
+            availabilityCalendar = dateRange.filter((date) => unavailableDates.has(date));
+          }
+  
+          return {
+            id: propertyData.id,
+            name: propertyData.name,
+            numberOfAdults: propertyData.numberOfAdults,
+            numberOfKids: propertyData.numberOfKids,
+            numberOfDoubleBeds: propertyData.numberOfDoubleBeds,
+            numberOfSingleBeds: propertyData.numberOfSingleBeds,
+            airConditioning: propertyData.airConditioning,
+            wifi: propertyData.wifi,
+            garage: propertyData.garage,
+            houseOrApartment: propertyData.houseOrApartment,
+            mtsToTheBeach: propertyData.mtsToTheBeach,
+            countryId: propertyData.countryId,
+            stateOrProvince: propertyData.stateOrProvince,
+            district: propertyData.district,
+            neighborhood: propertyData.neighborhood,
+            reducedImages: propertyData.reducedImages,
+            pricePerNight: propertyData.pricePerNight,
+            availabilityCalendar: availabilityCalendar,
+          };
+        });
+  
       return {
         properties,
         total: count,
@@ -80,7 +119,7 @@ export class PropertyServiceImpl implements PropertyService {
       throw new Error(`Error searching property: ${error.message}`);
     }
   }
-
+  
   async getAllProperties(): Promise<InstanceType<typeof Property>[]> {
     return await Property.findAll();
   }
