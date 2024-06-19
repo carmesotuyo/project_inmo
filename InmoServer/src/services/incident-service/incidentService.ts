@@ -1,4 +1,3 @@
-import { connect } from 'amqplib';
 import { Pipeline } from './pipeline/Pipeline';
 import { QueueFactory } from './pipeline/QueueFactory';
 import { Filters } from './filters/filters';

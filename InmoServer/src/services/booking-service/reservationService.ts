@@ -125,12 +125,12 @@ export class ReservationServiceImpl implements ReservationService {
     const totalCapacity = numberOfAdults + numberOfKids;
     return adults + children <= totalCapacity;
   }
-  async paymentCorrect(reservationId: number, email: string, totalPaid: number): Promise<void> {
+  async processPayment(reservationId: number, email: string, totalPaid: number): Promise<void> {
     const success = await this.paymentService.processPayment(email, totalPaid);
     if (success) {
       await Reservation.update(
         { status: 'Paid', amountPaid: totalPaid }, // Asumiendo que 1.0 representa el pago completo
-        { where: { id: reservationId } }
+        { where: { id: reservationId } },
       );
     } else {
       throw new Error('No se pudo procesar el pago correctamente vuelva a intentar');

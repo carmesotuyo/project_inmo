@@ -48,12 +48,12 @@ export const User = sequelize.define(
       },
     },
     role: {
-      type: DataTypes.ENUM('Administrador', 'Operario de Inmuebles', 'Inquilino', 'Propietario'),
+      type: DataTypes.ENUM('Administrador', 'Operario', 'Inquilino', 'Propietario'),
       allowNull: false,
       validate: {
         isIn: {
-          args: [['Administrador', 'Operario de Inmuebles', 'Inquilino', 'Propietario']],
-          msg: "User role must be 'Administrador', 'Operario de Inmuebles', 'Inquilino' or 'Propietario'",
+          args: [['Administrador', 'Operario', 'Inquilino', 'Propietario']],
+          msg: "User role must be 'Administrador', 'Operario', 'Inquilino' or 'Propietario'",
         },
       },
     },
