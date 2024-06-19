@@ -99,6 +99,10 @@ export const Property = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    reducedImages: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     pricePerNight: {
       type: DataTypes.FLOAT,
       allowNull: false,

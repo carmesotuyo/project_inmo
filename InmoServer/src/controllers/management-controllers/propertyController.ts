@@ -58,4 +58,20 @@ export class PropertyController {
       });
     }
   }
+
+  async payProperty(req: any, res: Response): Promise<void> {
+    try {
+      const email = req.user.email;
+      const propertyId = req.params.id;
+      await this.propertyService.paymentCorrect(propertyId, email);
+      logger.info(`Payment processed - email: ${email}, propertyId: ${propertyId}`);
+      res.status(200).json(`Payment processed - email: ${email}, propertyId: ${propertyId}`);
+    } catch (error: any) {
+      logger.error('Error processing payment', { error: getErrorMessage(error) });
+      res.status(400).json({
+        message: 'Error processing payment',
+        error: getErrorMessage(error),
+      });
+    }
+  }
 }

@@ -68,12 +68,6 @@ export class PropertyFilter {
   async buildWhereClause(): Promise<any> {
     const whereClause: any = {};
 
-    if (this.filters.startDate && this.filters.endDate) {
-      whereClause.available = {
-        [Op.notBetween]: [new Date(this.filters.startDate), new Date(this.filters.endDate)],
-      };
-    }
-
     if (this.filters.numberOfAdults !== undefined) {
       whereClause.numberOfAdults = { [Op.gte]: this.filters.numberOfAdults };
     }
@@ -121,6 +115,8 @@ export class PropertyFilter {
     if (this.filters.neighborhood) {
       whereClause.neighborhood = { [Op.like]: `%${this.filters.neighborhood}%` };
     }
+
+    whereClause.status = 'Activo';
 
     return whereClause;
   }

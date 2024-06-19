@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import { logController } from '../controllers/';
-import { authenticateJWT } from '../middleware/authMiddleware';
+import { authMiddleware } from '../middleware/authMiddleware';
 
 const router = Router();
 const { getLogs } = logController;
 
-router.get('/logs', authenticateJWT(["Administrador"]), getLogs);
+router.get('/logs', authMiddleware(['Administrador']), getLogs);
 
 export default router;
