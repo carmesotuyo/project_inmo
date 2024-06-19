@@ -1,4 +1,4 @@
-import { ReservationRequest } from '../../dtos/reservationRequest';
+import { ReservationRequest, Inquilino } from '../../dtos/reservationRequest';
 import { Reservation } from '../../data-access/reservation';
 import { Property } from '../../data-access/property';
 import { ReservationService } from '../../interfaces/services/reservationService';
@@ -9,6 +9,7 @@ import { PropertyService } from '../../interfaces/services/propertyService';
 import { ReservationFilterOptions } from '../../utils/reservationFilters';
 import { ReservationFilter } from '../../utils/reservationFilters';
 import { PaymentService } from '../../interfaces/services/paymentService';
+import { User } from '../../data-access/user';
 
 export class ReservationServiceImpl implements ReservationService {
   constructor(
@@ -17,9 +18,21 @@ export class ReservationServiceImpl implements ReservationService {
     private propertyService: PropertyService,
     private paymentService: PaymentService,
   ) {}
-  async createReservation(data: ReservationRequest): Promise<InstanceType<typeof Reservation>> {
+  async createReservation(data: ReservationRequest, email: string): Promise<InstanceType<typeof Reservation>> {
     if (!data) throw Error('Data incorrecta, DTO vacio');
-    const { propertyId, adults, children, startDate, endDate, inquilino } = data;
+    const { propertyId, adults, children, startDate, endDate, address, nationality, country } = data;
+    const user: any = await User.findByPk(email);
+    if (!user) throw new Error('Usuario no encontrado');
+    const inquilino: Inquilino = {
+      document: user.document as string,
+      first_name: user.get('first_name') as string,
+      last_name: user.get('last_name') as string,
+      email: user.get('email') as string,
+      phone_number: user.get('phone_number') as string,
+      address,
+      nationality,
+      country,
+    };
 
     // Obtener la propiedad de la base de datos
     const property = await Property.findByPk(propertyId);
@@ -36,7 +49,6 @@ export class ReservationServiceImpl implements ReservationService {
     const start = new Date(startDate); // Convertir startDate a Date
     const end = new Date(endDate); // Convertir endDate a Date
     const numberOfNights = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
-
     // Crear reserva pendiente de aprobación
     const reservationObject = {
       propertyId,
@@ -130,7 +142,7 @@ export class ReservationServiceImpl implements ReservationService {
     if (success) {
       await Reservation.update(
         { status: 'Paid', amountPaid: totalPaid }, // Asumiendo que 1.0 representa el pago completo
-        { where: { id: reservationId } }
+        { where: { id: reservationId } },
       );
     } else {
       throw new Error('No se pudo procesar el pago correctamente vuelva a intentar');
