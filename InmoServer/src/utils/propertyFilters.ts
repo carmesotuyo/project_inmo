@@ -116,6 +116,8 @@ export class PropertyFilter {
       whereClause.neighborhood = { [Op.like]: `%${this.filters.neighborhood}%` };
     }
 
+    whereClause.status = 'Activo';
+
     return whereClause;
   }
 }
