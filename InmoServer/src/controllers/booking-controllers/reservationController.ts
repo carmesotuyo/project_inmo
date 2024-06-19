@@ -50,6 +50,7 @@ export class ReservationController {
       });
     }
   };
+  
   public cancelReservation = async (req: Request, res: Response) => {
     try {
       const { email, reservationCode } = req.body;
@@ -70,9 +71,12 @@ export class ReservationController {
       });
     }
   };
+
   public getReservationsAdmin = async (req: Request, res: Response) => {
     try {
       const filters = req.query;
+      console.log('filters de controller: =======');
+      console.log(filters);
       const reservations = await this.reservationService.getReservationsAdmin(filters);
       logger.info(`Reservations fetched - filters: ${JSON.stringify(filters)}`);
       res.status(200).json(reservations);
@@ -84,6 +88,7 @@ export class ReservationController {
       });
     }
   };
+
   public paymentCorrect = async (req: Request, res: Response) => {
     try {
       const { reservationId, email, totalPaid } = req.body;
