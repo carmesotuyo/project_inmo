@@ -75,12 +75,27 @@ export class ReservationServiceImpl implements ReservationService {
     });
     return reservation;
   }
-  async getReservationsAdmin(filters: ReservationFilterOptions): Promise<InstanceType<typeof Reservation>[]> {
-    // Validar que sea admin/operario
+  async getReservationsAdmin(filters: ReservationFilterOptions): Promise<any[]> {
     const reservationFilter = new ReservationFilter(filters);
     const whereClause = await reservationFilter.buildWhereClause();
+    const reservations = await Reservation.findAll({ where: whereClause });
+    return await this.filterReservationsByInquilino(reservations, filters);
+  }
 
-    return await Reservation.findAll({ where: whereClause, limit: filters.limit, offset: filters.offset });
+  async filterReservationsByInquilino(reservations: any[], filters: ReservationFilterOptions): Promise<any[]> {
+    return reservations.filter((reservation) => {
+      const inquilino = reservation.inquilino;
+
+      if (filters.tenantEmail && !inquilino.email.includes(filters.tenantEmail)) {
+        return false;
+      }
+
+      if (filters.tenantName && !(inquilino.first_name.includes(filters.tenantName) || inquilino.last_name.includes(filters.tenantName))) {
+        return false;
+      }
+
+      return true;
+    });
   }
 
   async cancelReservation(email: string, reservationCode: string): Promise<InstanceType<typeof Reservation> | null> {
