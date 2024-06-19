@@ -10,7 +10,7 @@ export const authMiddleware = (allowedRoles?: string[]) => (req: any, res: any, 
 
     jwt.verify(token, process.env.JWT_SECRET!, (err: any, user: any) => {
       if (err) {
-        return res.status(403).json({ error: 'Access denied' });
+        return res.status(403).json({ error: 'Login is required' });
       }
       if (allowedRoles && (!user.role || !allowedRoles.includes(user.role))) {
         logger.error(`User ${user.email} with role ${user.role} tried to access a forbidden route`);
