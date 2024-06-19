@@ -1,3 +1,4 @@
+import CacheModule from '../cache/cacheModule';
 import { QueueServiceImpl } from '../services/queue-service/queueService';
 import { PropertyController } from './management-controllers/propertyController';
 import { PropertyServiceImpl } from '../services/management-service/propertyService';
@@ -20,6 +21,8 @@ import { LogController } from './log-controllers/logsController';
 import { NotificationServiceImpl } from '../services/notification-service/notificationService';
 import { SignalController } from './incident-controllers/signalController';
 
+const cache = new CacheModule();
+
 // Instanciar las implementaciones de los servicios
 const queueService = new QueueServiceImpl();
 const propertyService = new PropertyServiceImpl();
@@ -28,7 +31,7 @@ const countryService = new CountryServiceImpl();
 const paymentService = new PaymentServiceImpl();
 const reservationService = new ReservationServiceImpl(propertyAvailabilityService, countryService, propertyService, paymentService);
 const serviceTypeService = new ServiceTypeServiceImpl();
-const sensorService = new SensorServiceImpl(serviceTypeService, propertyService);
+const sensorService = new SensorServiceImpl(serviceTypeService, propertyService, cache);
 const userService = new UserService();
 const logService = new LogService();
 const notificationService = new NotificationServiceImpl();
