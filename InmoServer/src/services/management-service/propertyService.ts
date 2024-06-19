@@ -6,8 +6,11 @@ import { PropertyAvailability } from '../../data-access/propertyAvailability';
 import { PropertyFilterOptions } from '../../utils/propertyFilters';
 import { PropertyFilter } from '../../utils/propertyFilters';
 import { reduceImages } from '../../utils/reducedImageAdapter';
+import { PaymentService } from '../../interfaces/services/paymentService';
 
 export class PropertyServiceImpl implements PropertyService {
+  constructor(private paymentService: PaymentService) {}
+
   async getPropertyByID(id: number): Promise<InstanceType<typeof Property>> {
     const property = await Property.findByPk(id);
     if (!property) throw new Error('Propiedad no encontrada');
@@ -17,15 +20,15 @@ export class PropertyServiceImpl implements PropertyService {
     try {
       const propertyFilter = new PropertyFilter(filters);
       const whereClause = await propertyFilter.buildWhereClause();
-  
+
       let { limit = 10, page = 1, startDate, endDate } = filters;
-  
+
       // Validación de parámetros de paginación
       limit = Math.max(1, Math.min(limit, 100));
       page = Math.max(1, page);
-  
+
       const offset = (page - 1) * limit;
-  
+
       // Consulta para obtener propiedades con disponibilidad en el rango de fechas especificado
       const { count, rows } = await Property.findAndCountAll({
         where: whereClause,
@@ -33,7 +36,7 @@ export class PropertyServiceImpl implements PropertyService {
         offset,
         include: [{ model: PropertyAvailability, as: 'availabilities' }],
       });
-  
+
       // Filtrar propiedades según su disponibilidad dentro del rango de fechas
       const properties = rows
         .filter((property: any) => {
@@ -44,7 +47,7 @@ export class PropertyServiceImpl implements PropertyService {
               const end = new Date(endDate);
               const availStart = new Date(availability.startDate);
               const availEnd = new Date(availability.endDate);
-  
+
               return availStart <= end && availEnd >= start;
             });
           }
@@ -52,7 +55,7 @@ export class PropertyServiceImpl implements PropertyService {
         })
         .map((property) => {
           const propertyData = property.toJSON();
-  
+
           let availabilityCalendar: string[] = [];
           const unavailableDates = new Set(
             propertyData.availabilities.flatMap((availability: any) => {
@@ -65,7 +68,7 @@ export class PropertyServiceImpl implements PropertyService {
               return dates;
             }),
           );
-  
+
           if (!startDate || !endDate) {
             // Si no se ingresa rango de fechas, calcular disponibilidad para los próximos 30 días
             const today = new Date();
@@ -74,7 +77,7 @@ export class PropertyServiceImpl implements PropertyService {
               date.setDate(today.getDate() + i);
               return date.toISOString().split('T')[0];
             });
-  
+
             availabilityCalendar = next30Days.filter((date) => unavailableDates.has(date));
           } else {
             // Verificar disponibilidad en el rango de fechas proporcionado
@@ -85,10 +88,10 @@ export class PropertyServiceImpl implements PropertyService {
               dateRange.push(start.toISOString().split('T')[0]);
               start.setDate(start.getDate() + 1);
             }
-  
+
             availabilityCalendar = dateRange.filter((date) => unavailableDates.has(date));
           }
-  
+
           return {
             id: propertyData.id,
             name: propertyData.name,
@@ -109,17 +112,18 @@ export class PropertyServiceImpl implements PropertyService {
             pricePerNight: propertyData.pricePerNight,
             availabilityCalendar: availabilityCalendar,
           };
-        });
-  
+        })
+        .filter((property) => property.availabilityCalendar.length > 0);
+
       return {
         properties,
-        total: count,
+        total: properties.length,
       };
     } catch (error: any) {
       throw new Error(`Error searching property: ${error.message}`);
     }
   }
-  
+
   async getAllProperties(): Promise<InstanceType<typeof Property>[]> {
     return await Property.findAll();
   }
@@ -156,5 +160,19 @@ export class PropertyServiceImpl implements PropertyService {
 
   async existsProperty(id: number): Promise<boolean> {
     return (await Property.findByPk(id)) != null;
+  }
+
+  async paymentCorrect(propertyId: number, email: string): Promise<void> {
+    const property = await this.getPropertyByID(propertyId);
+    if (property.get('status') === 'Activo') {
+      throw new Error('La propiedad ya se encuentra activa');
+    }
+    const totalPaid = 200;
+    const success = await this.paymentService.processPayment(email, totalPaid);
+    if (success) {
+      await Property.update({ status: 'Activo' }, { where: { id: propertyId } });
+    } else {
+      throw new Error('No se pudo procesar el pago correctamente vuelva a intentar');
+    }
   }
 }
