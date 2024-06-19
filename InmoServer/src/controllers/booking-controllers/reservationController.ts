@@ -10,9 +10,9 @@ export class ReservationController {
     private queueService: QueueService,
   ) {}
 
-  public createReservation = async (req: Request, res: Response) => {
+  public createReservation = async (req: any, res: Response) => {
     try {
-      const reservation = await this.reservationService.createReservation(req.body); //Reservation request
+      const reservation = await this.reservationService.createReservation(req.body, req.user.email); //Reservation request
       this.queueService.addJobToQueue('reservation', reservation.toJSON());
       logger.info(`Reservation created - code: ${reservation.get('reservationCode')}`);
       res.status(201).json(reservation);
@@ -25,9 +25,10 @@ export class ReservationController {
     }
   };
 
-  public getReservation = async (req: Request, res: Response) => {
+  public getReservation = async (req: any, res: Response) => {
     try {
-      const { email, reservationCode } = req.query;
+      const reservationCode = req.params.id;
+      const email = req.user.email;
       if (!email || !reservationCode) {
         res.status(400).json({ message: 'Email y código de reserva son requeridos' });
         return;
