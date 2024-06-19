@@ -9,4 +9,5 @@ export interface PropertyService {
   searchProperties(filters: PropertyFilterOptions): Promise<{ properties: PropertyResponse[]; total: number }>;
   existsProperty(id: number): Promise<boolean>;
   getAllProperties(): Promise<InstanceType<typeof Property>[]>;
+  paymentCorrect(propertyId: number, email: string): Promise<void>;
 }
