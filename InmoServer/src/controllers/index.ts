@@ -22,10 +22,10 @@ import { SignalController } from './incident-controllers/signalController';
 
 // Instanciar las implementaciones de los servicios
 const queueService = new QueueServiceImpl();
-const propertyService = new PropertyServiceImpl();
 const propertyAvailabilityService = new PropertyAvailabilityServiceImpl();
 const countryService = new CountryServiceImpl();
 const paymentService = new PaymentServiceImpl();
+const propertyService = new PropertyServiceImpl(paymentService);
 const reservationService = new ReservationServiceImpl(propertyAvailabilityService, countryService, propertyService, paymentService);
 const serviceTypeService = new ServiceTypeServiceImpl();
 const sensorService = new SensorServiceImpl(serviceTypeService, propertyService);
