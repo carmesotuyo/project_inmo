@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { signalController } from '../controllers/';
-import { authenticateJWT } from '../middleware/authMiddleware';
+import { authMiddleware } from '../middleware/authMiddleware';
 
 const router = Router();
 const { getSignals, getRecentSignalsForProperty } = signalController;

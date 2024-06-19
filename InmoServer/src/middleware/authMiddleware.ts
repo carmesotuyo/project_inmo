@@ -2,7 +2,7 @@ import { NextFunction } from 'express';
 import logger from '../config/logger';
 import jwt from 'jsonwebtoken';
 
-export const authenticateJWT = (allowedRoles?: string[]) => (req: any, res: any, next: NextFunction) => {
+export const authMiddleware = (allowedRoles?: string[]) => (req: any, res: any, next: NextFunction) => {
   const authHeader = req.headers.authorization;
 
   if (authHeader) {
