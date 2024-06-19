@@ -30,7 +30,7 @@ export class PropertyServiceImpl implements PropertyService {
       const offset = (page - 1) * limit;
 
       // Consulta para obtener propiedades con disponibilidad en el rango de fechas especificado
-      const { count, rows } = await Property.findAndCountAll({
+      const { rows } = await Property.findAndCountAll({
         where: whereClause,
         limit,
         offset,
