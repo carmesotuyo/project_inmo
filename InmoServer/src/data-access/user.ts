@@ -1,7 +1,6 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../config/database';
 
-
 export const User = sequelize.define(
   'User',
   {
@@ -49,8 +48,14 @@ export const User = sequelize.define(
       },
     },
     role: {
-      type: DataTypes.STRING,
+      type: DataTypes.ENUM('Administrador', 'Operario de Inmuebles', 'Inquilino', 'Propietario'),
       allowNull: false,
+      validate: {
+        isIn: {
+          args: [['Administrador', 'Operario de Inmuebles', 'Inquilino', 'Propietario']],
+          msg: "User role must be 'Administrador', 'Operario de Inmuebles', 'Inquilino' or 'Propietario'",
+        },
+      },
     },
     auth0_id: {
       type: DataTypes.STRING,
