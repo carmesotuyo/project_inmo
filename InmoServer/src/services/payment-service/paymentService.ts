@@ -10,7 +10,7 @@ export class PaymentServiceImpl implements PaymentService {
 
   async processPayment(email: string, amountToPay: number): Promise<boolean> {
     try {
-      const response = await axios.post(`${this.baseUrl}/process-payment`);
+      const response = await axios.post(`${this.baseUrl}/payment`);
       const paymentSuccess = response.data.message === 'Payment processed successfully';
 
       return paymentSuccess;
@@ -22,7 +22,7 @@ export class PaymentServiceImpl implements PaymentService {
 
   async processRefund(email: string, amount: number): Promise<boolean> {
     try {
-      const response = await axios.post(`${this.baseUrl}/process-refund`);
+      const response = await axios.post(`${this.baseUrl}/refund`);
       const refundSuccess = response.data.message === 'Refund processed successfully';
 
       return refundSuccess;

@@ -65,7 +65,7 @@ export class ReservationServiceImpl implements ReservationService {
     };
     const reservation = await Reservation.create(reservationObject);
     this.propertyAvailabilityService.adjustPropertyAvailabilityFromReservationDates(propertyId, startDate, endDate);
-    
+
     let notificationResult;
     const propertyKey = 'Booking';
     const propertyValue = `Se ha creado una nueva reserva en el innmueble ${propertyId} con el código ${reservation.get('id')}`;
@@ -74,6 +74,7 @@ export class ReservationServiceImpl implements ReservationService {
     notificationResult = await this.notificationService.notify(notifRequest);
     return reservation;
   }
+
   async getReservationByEmailAndCode(email: string, reservationCode: string): Promise<InstanceType<typeof Reservation> | null> {
     const reservation = await Reservation.findOne({
       where: {

@@ -18,7 +18,7 @@ export class PropertyController {
       logger.info(`Property created - name: ${property.get('name')}`);
       res.status(201).json(property);
     } catch (error: any) {
-      logger.error('Error creating property', { error: getErrorMessage(error) });
+      logger.error(`Error creating property: ${getErrorMessage(error)}`);
       res.status(400).json({
         message: 'Error creating property',
         error: getErrorMessage(error),
@@ -37,7 +37,7 @@ export class PropertyController {
       logger.info(`Properties fetched - filters: ${JSON.stringify(filters)}`);
       res.status(200).json(result);
     } catch (error: any) {
-      logger.error('Error searching property', { error: getErrorMessage(error) });
+      logger.error(`Error searching property: ${getErrorMessage(error)}`);
       res.status(400).json({
         message: 'Error searching property',
         error: getErrorMessage(error),
@@ -51,7 +51,7 @@ export class PropertyController {
       logger.info('Properties fetched');
       res.status(200).json(properties);
     } catch (error: any) {
-      logger.error('Error fetching properties', { error: getErrorMessage(error) });
+      logger.error(`Error fetching properties: ${getErrorMessage(error)}`);
       res.status(400).json({
         message: 'Error fetching properties',
         error: getErrorMessage(error),
@@ -67,7 +67,7 @@ export class PropertyController {
       logger.info(`Payment processed - email: ${email}, propertyId: ${propertyId}`);
       res.status(200).json(`Payment processed - email: ${email}, propertyId: ${propertyId}`);
     } catch (error: any) {
-      logger.error('Error processing payment', { error: getErrorMessage(error) });
+      logger.error(`Error processing payment: ${getErrorMessage(error)}`);
       res.status(400).json({
         message: 'Error processing payment',
         error: getErrorMessage(error),
