@@ -10,6 +10,8 @@ import { ReservationFilterOptions } from '../../utils/reservationFilters';
 import { ReservationFilter } from '../../utils/reservationFilters';
 import { PaymentService } from '../../interfaces/services/paymentService';
 import { User } from '../../data-access/user';
+import { NotificationService } from '../../interfaces/services/notificationService';
+import { NotificationRequest, NotificationPriority, NotificationType } from '../../dtos/notificationRequest';
 
 export class ReservationServiceImpl implements ReservationService {
   constructor(
@@ -17,6 +19,7 @@ export class ReservationServiceImpl implements ReservationService {
     private countryService: CountryService,
     private propertyService: PropertyService,
     private paymentService: PaymentService,
+    private notificationService: NotificationService,
   ) {}
   async createReservation(data: ReservationRequest, email: string): Promise<InstanceType<typeof Reservation>> {
     if (!data) throw Error('Data incorrecta, DTO vacio');
@@ -60,10 +63,15 @@ export class ReservationServiceImpl implements ReservationService {
       inquilino,
       amountPaid: pricePerNight * numberOfNights,
     };
-    //Faltaria agregar que llegue notifiacion al admin para que apruebe la reserva
     const reservation = await Reservation.create(reservationObject);
     this.propertyAvailabilityService.adjustPropertyAvailabilityFromReservationDates(propertyId, startDate, endDate);
-    // TODO: llamar al servicio den notificaciones para enviar la notificacion
+    
+    let notificationResult;
+    const propertyKey = 'Booking';
+    const propertyValue = `Se ha creado una nueva reserva en el innmueble ${propertyId} con el código ${reservation.get('id')}`;
+
+    const notifRequest: NotificationRequest = { type: NotificationType.Booking, propertyId: propertyId, priority: NotificationPriority.Medium, message: propertyKey + '#' + propertyValue };
+    notificationResult = await this.notificationService.notify(notifRequest);
     return reservation;
   }
   async getReservationByEmailAndCode(email: string, reservationCode: string): Promise<InstanceType<typeof Reservation> | null> {
@@ -168,11 +176,18 @@ export class ReservationServiceImpl implements ReservationService {
     if (status === 'Pending Approval') {
       throw new Error('El pago no se ha realizado, la reserva está pendiente de aprobación por un administrador.');
     }
+    const propertyId = reservation.get('propertyId') as number;
     const amountPaid = reservation.get('amountPaid') as number;
     const email = reservation.get('inquilino.email') as string;
     const success = await this.paymentService.processPayment(email, amountPaid);
     if (success) {
-      await Reservation.update({ status: 'Paid' }, { where: { id: reservationId } },);
+      await Reservation.update({ status: 'Paid' }, { where: { id: reservationId } });
+      let notificationResult;
+      const propertyKey = 'Payment';
+      const propertyValue = `Se ha procesado el pago de la reserva ${reservationId} del inmueble ${propertyId} por un monto de ${amountPaid}`;
+
+      const notifRequest: NotificationRequest = { type: NotificationType.Payment, propertyId: propertyId, priority: NotificationPriority.Medium, message: propertyKey + '#' + propertyValue };
+      await this.notificationService.notify(notifRequest);
     } else {
       throw new Error('No se pudo procesar el pago correctamente vuelva a intentar');
     }
