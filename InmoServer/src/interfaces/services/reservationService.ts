@@ -7,6 +7,6 @@ export interface ReservationService {
   getReservationByEmailAndCode(email: string, reservationCode: string): Promise<InstanceType<typeof Reservation> | null>;
   cancelReservation(email: string, reservationCode: string): Promise<InstanceType<typeof Reservation> | null>;
   getReservationsAdmin(filters: ReservationFilterOptions): Promise<InstanceType<typeof Reservation>[]>;
-  paymentCorrect(reservationId: number, email: string, totalPaid: number): Promise<void>;
+  paymentCorrect(reservationId: number): Promise<void>;
   aproveReservation(reservationId: number, aprove: string): Promise<InstanceType<typeof String>>;
 }

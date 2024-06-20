@@ -91,14 +91,9 @@ export class ReservationController {
 
   public paymentCorrect = async (req: Request, res: Response) => {
     try {
-      const { reservationId, email, totalPaid } = req.body;
+      const reservationId = Number(req.params.id);
 
-      if (!reservationId || !email || totalPaid == null) {
-        res.status(400).json({ message: 'Reservation ID, email y total pagado son requeridos' });
-        return;
-      }
-
-      await this.reservationService.paymentCorrect(reservationId, email, totalPaid);
+      await this.reservationService.paymentCorrect(reservationId);
       logger.info(`Payment processed - reservationId: ${reservationId}`);
       res.status(200).json({ message: 'Pago procesado correctamente' });
     } catch (error: any) {

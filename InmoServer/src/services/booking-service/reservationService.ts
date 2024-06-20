@@ -154,13 +154,20 @@ export class ReservationServiceImpl implements ReservationService {
     return adults + children <= totalCapacity;
   }
 
-  async paymentCorrect(reservationId: number, email: string, totalPaid: number): Promise<void> {
-    const success = await this.paymentService.processPayment(email, totalPaid);
+  async paymentCorrect(reservationId: number): Promise<void> {
+    const reservation: any = await Reservation.findByPk(reservationId);
+    if (!reservation) {
+      throw new Error('Reserva no encontrada');
+    }
+    const status = reservation.get('status') as string;
+    if (status === 'Pending Approval') {
+      throw new Error('El pago no se ha realizado, la reserva está pendiente de aprobación por un administrador.');
+    }
+    const amountPaid = reservation.get('amountPaid') as number;
+    const email = reservation.get('inquilino.email') as string;
+    const success = await this.paymentService.processPayment(email, amountPaid);
     if (success) {
-      await Reservation.update(
-        { status: 'Paid', amountPaid: totalPaid }, // Asumiendo que 1.0 representa el pago completo
-        { where: { id: reservationId } },
-      );
+      await Reservation.update({ status: 'Paid' }, { where: { id: reservationId } });
     } else {
       throw new Error('No se pudo procesar el pago correctamente vuelva a intentar');
     }
