@@ -50,7 +50,7 @@ export class ReservationController {
       });
     }
   };
-  
+
   public cancelReservation = async (req: Request, res: Response) => {
     try {
       const { email, reservationCode } = req.body;
@@ -105,6 +105,28 @@ export class ReservationController {
       logger.error('Error processing payment', { error: getErrorMessage(error) });
       res.status(400).json({
         message: 'Error procesando el pago',
+        error: getErrorMessage(error),
+      });
+    }
+  };
+
+  public aproveReservation = async (req: Request, res: Response) => {
+    try {
+      const reservationId = Number(req.params.id); // Convert the reservationId to a number
+      const aprove = req.query.aprove;
+
+      if (!reservationId) {
+        res.status(400).json({ message: 'Reservation ID es requerido' });
+        return;
+      }
+
+      const aproveRes = await this.reservationService.aproveReservation(reservationId, aprove as string);
+      logger.info(`Reservation aprobada - reservationId: ${reservationId}`);
+      res.status(200).json(aproveRes);
+    } catch (error: any) {
+      logger.error('Error aprobando la reserva', { error: getErrorMessage(error) });
+      res.status(400).json({
+        message: 'Error aprobando la reserva',
         error: getErrorMessage(error),
       });
     }
