@@ -111,6 +111,11 @@ export class ReservationServiceImpl implements ReservationService {
     const propertyId = reservation.get('propertyId') as number;
     const property = await this.propertyService.getPropertyByID(propertyId);
     const { refundDays, refundPercentage } = await this.countryService.getRefundPolicyByCountry(property.get('countryId') as string);
+    const availability: any = {
+      propertyId,
+      startDate: reservation.get('startDate') as string,
+      endDate: reservation.get('endDate') as string,
+    };
 
     let refundAmount = 0;
     if (daysBeforeStart > refundDays) {
@@ -118,18 +123,18 @@ export class ReservationServiceImpl implements ReservationService {
       const paid = reservation.get('amountPaid') as number;
       refundAmount = paid;
     } else {
-      // Cancelación parcial
       const paid = reservation.get('amountPaid') as number;
       reservation.set('status', 'Cancelled by Tenant');
       refundAmount = paid * (refundPercentage / 100);
-      // Lógica para reembolso parcial
     }
     await this.processRefund(reservation.get('inquilino.email') as string, refundAmount);
     await reservation.save();
+    await this.propertyAvailabilityService.createAvailability(availability);
+
     return reservation;
   }
 
-  // Método ficticio para procesar el reembolso a través del sistema de pagos
+  // Emulador para procesar el reembolso a través del sistema de pagos
   private async processRefund(email: string, amount: number): Promise<void> {
     const success = await this.paymentService.processRefund(email, amount);
     if (!success) {
