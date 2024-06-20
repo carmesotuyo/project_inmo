@@ -37,8 +37,5 @@ export async function checkDateOverlap(
     where: whereClause,
   });
 
-  console.log('overlappingEntries: =======');
-  console.log(overlappingEntries);
-
   return overlappingEntries.length > 0;
 }
