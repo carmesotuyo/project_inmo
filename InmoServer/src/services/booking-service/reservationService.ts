@@ -128,6 +128,7 @@ export class ReservationServiceImpl implements ReservationService {
     await reservation.save();
     return reservation;
   }
+
   // Método ficticio para procesar el reembolso a través del sistema de pagos
   private async processRefund(email: string, amount: number): Promise<void> {
     const success = await this.paymentService.processRefund(email, amount);
@@ -152,6 +153,7 @@ export class ReservationServiceImpl implements ReservationService {
     const totalCapacity = numberOfAdults + numberOfKids;
     return adults + children <= totalCapacity;
   }
+
   async paymentCorrect(reservationId: number, email: string, totalPaid: number): Promise<void> {
     const success = await this.paymentService.processPayment(email, totalPaid);
     if (success) {
@@ -161,6 +163,26 @@ export class ReservationServiceImpl implements ReservationService {
       );
     } else {
       throw new Error('No se pudo procesar el pago correctamente vuelva a intentar');
+    }
+  }
+
+  async aproveReservation(reservationId: number, aprove: string): Promise<InstanceType<typeof String>> {
+    const reservation = await Reservation.findByPk(reservationId);
+    if (!reservation) {
+      throw new Error('Reserva no encontrada');
+    }
+    const status = reservation.get('status') as string;
+    const aproveBool = JSON.parse(aprove.toLowerCase());
+    if (status === 'Pending Approval') {
+      if (aproveBool) {
+        reservation.set('status', 'Approved');
+      } else {
+        reservation.set('status', 'Rejected');
+      }
+      await reservation.save();
+      return aproveBool ? 'La reserva ha sido aprobada correctamente' : 'La reserva ha sido rechazada correctamente';
+    } else {
+      throw new Error('La reserva no está pendiente de aprobación');
     }
   }
 }
