@@ -63,7 +63,7 @@ export class PropertyController {
     try {
       const email = req.user.email;
       const propertyId = req.params.id;
-      await this.propertyService.paymentCorrect(propertyId, email);
+      await this.propertyService.processPayment(propertyId, email);
       logger.info(`Payment processed - email: ${email}, propertyId: ${propertyId}`);
       res.status(200).json(`Payment processed - email: ${email}, propertyId: ${propertyId}`);
     } catch (error: any) {

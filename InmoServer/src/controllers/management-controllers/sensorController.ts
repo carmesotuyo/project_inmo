@@ -42,7 +42,7 @@ export class SensorController {
       res.status(200).json({ observableProperties });
     } catch (error) {
       res.status(400).json({
-        message: 'Error updating sensor',
+        message: 'Error getting properties from sensor',
         error: getErrorMessage(error),
       });
     }

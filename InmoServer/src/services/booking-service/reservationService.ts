@@ -159,7 +159,7 @@ export class ReservationServiceImpl implements ReservationService {
     return adults + children <= totalCapacity;
   }
 
-  async paymentCorrect(reservationId: number): Promise<void> {
+  async processPayment(reservationId: number): Promise<void> {
     const reservation: any = await Reservation.findByPk(reservationId);
     if (!reservation) {
       throw new Error('Reserva no encontrada');
@@ -172,7 +172,7 @@ export class ReservationServiceImpl implements ReservationService {
     const email = reservation.get('inquilino.email') as string;
     const success = await this.paymentService.processPayment(email, amountPaid);
     if (success) {
-      await Reservation.update({ status: 'Paid' }, { where: { id: reservationId } });
+      await Reservation.update({ status: 'Paid' }, { where: { id: reservationId } },);
     } else {
       throw new Error('No se pudo procesar el pago correctamente vuelva a intentar');
     }

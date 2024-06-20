@@ -1,5 +1,4 @@
 import { PropertyRequest } from '../../dtos/propertyRequest';
-import { PropertyResponse } from '../../dtos/propertyResponse';
 import { Property } from '../../data-access/property';
 import { PropertyService } from '../../interfaces/services/propertyService';
 import { PropertyAvailability } from '../../data-access/propertyAvailability';
@@ -7,15 +6,28 @@ import { PropertyFilterOptions } from '../../utils/propertyFilters';
 import { PropertyFilter } from '../../utils/propertyFilters';
 import { reduceImages } from '../../utils/reducedImageAdapter';
 import { PaymentService } from '../../interfaces/services/paymentService';
+import { fetchAndCache, fetchAndCacheExistence, saveToCache } from '../../cache/withCache';
+import CacheModule from '../../cache/cacheModule';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const propertyCacheKeyGenerator = (id: string) => `property:${id}`;
+const ttl = 60; //cache ttl in seconds
 
 export class PropertyServiceImpl implements PropertyService {
-  constructor(private paymentService: PaymentService) {}
+  constructor(
+    private paymentService: PaymentService,
+    private cache: CacheModule,
+  ) {}
 
   async getPropertyByID(id: number): Promise<InstanceType<typeof Property>> {
-    const property = await Property.findByPk(id);
-    if (!property) throw new Error('Propiedad no encontrada');
-    return property;
+    return fetchAndCache<InstanceType<typeof Property>>(this.cache, propertyCacheKeyGenerator, ttl, id, async (id: string) => {
+      const DBProperty = await Property.findByPk(id);
+      return DBProperty ? DBProperty.toJSON() : null;
+    });
   }
+
   async searchProperties(filters: PropertyFilterOptions): Promise<{ properties: any[]; total: number }> {
     try {
       const propertyFilter = new PropertyFilter(filters);
@@ -155,24 +167,27 @@ export class PropertyServiceImpl implements PropertyService {
       reducedImages: reducedImagesString,
     };
 
-    return await Property.create(propertyObject);
+    const property = await Property.create(propertyObject);
+    await saveToCache(this.cache, propertyCacheKeyGenerator, ttl, property.toJSON(), property.get('id'));
+    return property;
   }
 
   async existsProperty(id: number): Promise<boolean> {
-    return (await Property.findByPk(id)) != null;
+    return fetchAndCacheExistence<InstanceType<typeof Property>>(this.cache, propertyCacheKeyGenerator, ttl, id, async (id: string) => {
+      const DBProperty = await Property.findByPk(id);
+      return DBProperty ? DBProperty.toJSON() : null;
+    });
   }
 
-  async paymentCorrect(propertyId: number, email: string): Promise<void> {
-    const property = await this.getPropertyByID(propertyId);
-    if (property.get('status') === 'Activo') {
-      throw new Error('La propiedad ya se encuentra activa');
-    }
-    const totalPaid = 200;
-    const success = await this.paymentService.processPayment(email, totalPaid);
+  async processPayment(propertyId: number, email: string): Promise<void> {
+    const property = await Property.findByPk(propertyId);
+    if (!property) throw new Error(`Property not found with ID ${propertyId}`);
+    if (property.get('status') === 'Activo') throw new Error(`Property with id ${propertyId} is already Active`);
+    const amountToPay = Number(process.env.PRICE_ACTIVATE_PROPERTY);
+    const success = await this.paymentService.processPayment(email, amountToPay);
     if (success) {
       await Property.update({ status: 'Activo' }, { where: { id: propertyId } });
-    } else {
-      throw new Error('No se pudo procesar el pago correctamente vuelva a intentar');
-    }
+      await this.cache.del(propertyCacheKeyGenerator(propertyId.toString())); //eliminamos la version anterior del cache si es que existia
+    } else throw new Error('No se pudo procesar el pago correctamente. Vuelva a intentar');
   }
 }
