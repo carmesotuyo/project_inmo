@@ -21,6 +21,16 @@ export class ReservationServiceImpl implements ReservationService {
     private paymentService: PaymentService,
     private notificationService: NotificationService,
   ) {}
+
+  // Getter para la propiedad privada
+  public getPropertyService(): PropertyService {
+    return this.propertyService;
+  }
+
+  public getCountryService(): CountryService {
+    return this.countryService;
+  }
+
   async createReservation(data: ReservationRequest, email: string): Promise<InstanceType<typeof Reservation>> {
     if (!data) throw Error('Data incorrecta, DTO vacio');
     const { propertyId, adults, children, startDate, endDate, address, nationality, country } = data;
