@@ -33,7 +33,10 @@ amqplib.connect(
 
         // filtra por tipo Seguridad, de todas las prioridades, del inmueble con id 2
         // filtra por tipo Temperatura, prioridad baja, inmueble con id 3
-        const topics = ['Seguridad.*.2', 'Temperatura.Low.3'];
+        // const topics = ['Seguridad.*.2', 'Temperatura.Low.3'];
+
+        // filtra por notificaciones del propio sistema, como son pagos, reservas y altas de inmuebles
+        const topics = ['Payment.*.*', 'Booking.*.*', 'Property.*.*'];
 
         topics.forEach((topic) => {
           channel.bindQueue(q.queue, exchange, topic);
