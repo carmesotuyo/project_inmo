@@ -14,10 +14,10 @@ export class ReservationController {
     try {
       const reservation = await this.reservationService.createReservation(req.body, req.user.email); //Reservation request
       this.queueService.addJobToQueue('reservation', reservation.toJSON());
-      logger.info(`Reservation created - code: ${reservation.get('reservationCode')}`);
+      logger.info(`Reservation created - code: ${reservation.get('id')}`);
       res.status(201).json(reservation);
     } catch (error: any) {
-      logger.error('Error creating reservation', { error: getErrorMessage(error) });
+      logger.error(`Error creating reservation: ${getErrorMessage(error)}`);
       res.status(400).json({
         message: 'Error creating reservation',
         error: getErrorMessage(error),
@@ -40,10 +40,10 @@ export class ReservationController {
         res.status(404).json({ message: 'Reserva no encontrada' });
         return;
       }
-      logger.info(`Reservation fetched - code: ${reservation.get('reservationCode')}`);
+      logger.info(`Reservation fetched - code: ${reservation.get('id')}`);
       res.status(200).json(reservation);
     } catch (error: any) {
-      logger.error('Error fetching reservation', { error: getErrorMessage(error) });
+      logger.error(`Error fetching reservation: ${getErrorMessage(error)}`);
       res.status(500).json({
         message: 'Error consultando la reserva',
         error: getErrorMessage(error),
@@ -61,10 +61,10 @@ export class ReservationController {
       }
 
       const reservation = await this.reservationService.cancelReservation(email, reservationCode);
-      logger.info(`Reservation canceled - code: ${reservation?.get('reservationCode')}`);
+      logger.info(`Reservation canceled - code: ${reservation?.get('id')}`);
       res.status(200).json(reservation);
     } catch (error: any) {
-      logger.error('Error canceling reservation', { error: getErrorMessage(error) });
+      logger.error(`Error canceling reservation: ${getErrorMessage(error)}`);
       res.status(400).json({
         message: 'Error cancelando la reserva',
         error: getErrorMessage(error),
@@ -81,7 +81,7 @@ export class ReservationController {
       logger.info(`Reservations fetched - filters: ${JSON.stringify(filters)}`);
       res.status(200).json(reservations);
     } catch (error: any) {
-      logger.error('Error fetching reservations', { error: getErrorMessage(error) });
+      logger.error(`Error fetching reservations: ${getErrorMessage(error)}`);
       res.status(500).json({
         message: 'Error consultando las reservas',
         error: getErrorMessage(error),
@@ -96,7 +96,7 @@ export class ReservationController {
       logger.info(`Payment processed - reservationId: ${reservationId}`);
       res.status(200).json({ message: 'Pago procesado correctamente' });
     } catch (error: any) {
-      logger.error('Error processing payment', { error: getErrorMessage(error) });
+      logger.error(`Error processing payment: ${getErrorMessage(error)}`);
       res.status(400).json({
         message: 'Error procesando el pago',
         error: getErrorMessage(error),
@@ -115,10 +115,10 @@ export class ReservationController {
       }
 
       const aproveRes = await this.reservationService.aproveReservation(reservationId, aprove as string);
-      logger.info(`Reservation aprobada - reservationId: ${reservationId}`);
+      logger.info(`Reservation approved - reservationId: ${reservationId}`);
       res.status(200).json(aproveRes);
     } catch (error: any) {
-      logger.error('Error aprobando la reserva', { error: getErrorMessage(error) });
+      logger.error(`Error approving reservation: ${getErrorMessage(error)}`);
       res.status(400).json({
         message: 'Error aprobando la reserva',
         error: getErrorMessage(error),

@@ -12,7 +12,7 @@ export class SensorController {
       logger.info(`Sensor created - name: ${sensor.get('name')}`);
       res.status(201).json(sensor);
     } catch (error) {
-      logger.error('Error creating sensor', { error: getErrorMessage(error) });
+      logger.error(`Error creating sensor: ${getErrorMessage(error)}`);
       res.status(400).json({
         message: 'Error creating sensor',
         error: getErrorMessage(error),
@@ -27,7 +27,7 @@ export class SensorController {
       logger.info(`Sensor assigned to property - sensor: ${sensorId} - property: ${propertyId}`);
       res.status(200).json({ message: 'Sensor assigned to property successfully' });
     } catch (error) {
-      logger.error('Error assigning sensor', { error: getErrorMessage(error) });
+      logger.error(`Error assigning sensor: ${getErrorMessage(error)}`);
       res.status(400).json({
         message: 'Error assigning sensor',
         error: getErrorMessage(error),
@@ -55,7 +55,7 @@ export class SensorController {
       logger.info(`Sensor updated - id: ${id}`);
       res.status(200).json({ message: updatedSensor });
     } catch (error) {
-      logger.error('Error updating sensor', { error: getErrorMessage(error) });
+      logger.error(`Error updating sensor: ${getErrorMessage(error)}`);
       res.status(400).json({
         message: 'Error updating sensor',
         error: getErrorMessage(error),

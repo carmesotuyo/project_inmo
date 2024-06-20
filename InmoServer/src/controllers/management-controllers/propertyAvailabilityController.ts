@@ -12,7 +12,7 @@ export class PropertyAvailabilityController {
       logger.info(`Availability created - property: ${availability.get('propertyId')}`);
       res.status(201).json(availability);
     } catch (error: any) {
-      logger.error('Error creating availability', { error: getErrorMessage(error) });
+      logger.error(`Error creating availability: ${getErrorMessage(error)}`);
       res.status(400).json({
         message: 'Error creating availability',
         error: getErrorMessage(error),
@@ -30,7 +30,7 @@ export class PropertyAvailabilityController {
       logger.info(`Availability updated - id: ${id}`);
       res.status(200).json(availability);
     } catch (error: any) {
-      logger.error('Error updating availability', { error: getErrorMessage(error) });
+      logger.error(`Error updating availability: ${getErrorMessage(error)}`);
       res.status(400).json({
         message: 'Error updating availability',
         error: getErrorMessage(error),
@@ -45,7 +45,7 @@ export class PropertyAvailabilityController {
       logger.info(`Availabilities fetched - property: ${propertyId}`);
       res.status(200).json(availabilities);
     } catch (error: any) {
-      logger.error('Error fetching availabilities', { error: getErrorMessage(error) });
+      logger.error(`Error fetching availabilities: ${getErrorMessage(error)}`);
       res.status(400).json({
         message: 'Error fetching availabilities',
         error: getErrorMessage(error),

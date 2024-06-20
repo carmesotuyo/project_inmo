@@ -12,7 +12,7 @@ export class CountryController {
       logger.info(`Country created - name: ${country.get('name')}`);
       res.status(201).json(country);
     } catch (error: any) {
-      logger.error('Error creating country', { error: getErrorMessage(error) });
+      logger.error(`Error creating country: ${getErrorMessage(error)}`);
       res.status(400).json({
         message: 'Error creating country',
         error: getErrorMessage(error),
@@ -32,7 +32,7 @@ export class CountryController {
       logger.info(`Country updated - name: ${name}`);
       res.status(200).json(updatedCountry);
     } catch (error: any) {
-      logger.error('Error updating country', { error: getErrorMessage(error) });
+      logger.error(`Error updating country: ${getErrorMessage(error)}`);
       res.status(400).json({
         message: 'Error updating country',
         error: getErrorMessage(error),
