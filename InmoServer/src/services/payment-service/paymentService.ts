@@ -1,32 +1,34 @@
-import { PaymentEmulation } from '../../../../PaymentEmulator/src/paymentEmulation';
+import axios from 'axios';
 import { PaymentService } from '../../interfaces/services/paymentService';
 
 export class PaymentServiceImpl implements PaymentService {
-  async processPayment(email: string, amountToPay: number): Promise<boolean> {
-    const paymentSuccess = PaymentEmulation.processPayment();
+  private baseUrl: string;
 
-    if (paymentSuccess) {
-      // Actualizar el estado de la reserva
-      this.sendPaymentConfirmationNotifications(email, amountToPay); // llamar servicio de notifiaciones
+  constructor() {
+    this.baseUrl = 'http://localhost:3000';
+  }
+
+  async processPayment(email: string, amountToPay: number): Promise<boolean> {
+    try {
+      const response = await axios.post(`${this.baseUrl}/process-payment`);
+      const paymentSuccess = response.data.message === 'Payment processed successfully';
+
+      return paymentSuccess;
+    } catch (error) {
+      console.error('Error processing payment:', error);
+      return false;
     }
-    return paymentSuccess;
   }
 
   async processRefund(email: string, amount: number): Promise<boolean> {
-    const refundSuccess = PaymentEmulation.processRefund();
-    if (refundSuccess) {
-      this.sendRefundConfirmationNotifications(email, amount); // llamar servicio de notifiaciones
-    }
-    return refundSuccess;
-  }
+    try {
+      const response = await axios.post(`${this.baseUrl}/process-refund`);
+      const refundSuccess = response.data.message === 'Refund processed successfully';
 
-  async sendPaymentConfirmationNotifications(email: string, amountPaid: number): Promise<void> {
-    // Lógica para enviar correos electrónicos
-    // Aquí puedes implementar el envío de correos utilizando nodemailer u otro servicio
-  }
-  async sendRefundConfirmationNotifications(email: string, amountRefunded: number): Promise<void> {
-    // Lógica para enviar correos electrónicos
-    // Aquí puedes implementar el envío de correos utilizando nodemailer u otro servicio
+      return refundSuccess;
+    } catch (error) {
+      console.error('Error processing refund:', error);
+      return false;
+    }
   }
 }
-``;

@@ -1,4 +1,5 @@
 import { Op } from 'sequelize';
+import { Reservation } from '../data-access/reservation'; // Asegúrate de importar el modelo correcto
 
 export interface ReservationFilterOptions {
   startDate?: string;
@@ -7,8 +8,6 @@ export interface ReservationFilterOptions {
   tenantEmail?: string;
   tenantName?: string;
   reservationStatus?: 'Pending Approval' | 'Approved' | 'Rejected' | 'Cancelled by Tenant';
-  limit?: number;
-  offset?: number;
 }
 
 export class ReservationFilter {
@@ -29,14 +28,6 @@ export class ReservationFilter {
 
     if (this.filters.propertyCode) {
       whereClause.propertyId = this.filters.propertyCode;
-    }
-
-    if (this.filters.tenantEmail) {
-      whereClause['inquilino.email'] = { [Op.like]: `%${this.filters.tenantEmail}%` };
-    }
-
-    if (this.filters.tenantName) {
-      whereClause['inquilino.name'] = { [Op.like]: `%${this.filters.tenantName}%` };
     }
 
     if (this.filters.reservationStatus) {
