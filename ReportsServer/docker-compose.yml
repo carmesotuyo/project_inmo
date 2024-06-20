@@ -1,0 +1,47 @@
+version: "3.8"
+
+services:
+  reports-server:
+    build: .
+    container_name: reports-server
+    environment:
+      - PORT=3001
+      - MONGO_URI=mongodb://root:secret@mongodb:27018/reports?authSource=admin
+    depends_on:
+      - mongodb
+      - bull-queue
+    networks:
+      - inmo-network
+    ports:
+      - "3001:3001"
+
+  bull-queue:
+    image: redis:latest
+    container_name: bull-queue
+    ports:
+      - "6378:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - inmo-network
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb_reports
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - inmo-network
+
+volumes:
+  redis-data:
+  mongo-data:
+
+networks:
+  inmo-network:
+    external: true

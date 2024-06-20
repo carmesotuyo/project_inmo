@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  k6:
+    build: .
+    volumes:
+      - ./src:/src
+    entrypoint: ['k6', 'run', '/src/loadTest.js']
+    networks:
+      - inmo-network
+
+networks:
+  inmo-network:
+    external: true

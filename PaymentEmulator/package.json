@@ -1,0 +1,39 @@
+{
+  "name": "paymentemulator",
+  "version": "1.0.0",
+  "description": "Payment emulator component",
+  "main": "./src/paymentEmulation.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "cd src && npx ts-node paymentEmulation.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IngSoft-AR-2023-2/186554_271968_274924.git"
+  },
+  "author": "Carme, Fer y Nacho",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/IngSoft-AR-2023-2/186554_271968_274924/issues"
+  },
+  "homepage": "https://github.com/IngSoft-AR-2023-2/186554_271968_274924#readme",
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "prettier": "^3.3.1"
+  },
+  "prettier": {
+    "printWidth": 300,
+    "tabWidth": 2,
+    "useTabs": false,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "all",
+    "bracketSpacing": true,
+    "jsxBracketSameLine": false,
+    "arrowParens": "always",
+    "endOfLine": "lf"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

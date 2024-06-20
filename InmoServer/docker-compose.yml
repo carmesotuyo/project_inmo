@@ -1,0 +1,113 @@
+version: '3.8'
+
+services:
+  cache-redis:
+    image: redis:latest
+    container_name: cache-redis
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis-data:/data
+    networks:
+      - inmo-network
+
+  queue-redis:
+    image: redis:latest
+    container_name: queue-redis
+    ports:
+      - '6380:6379'
+    volumes:
+      - redis-queue-data:/data
+    networks:
+      - inmo-network
+
+  inmo-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - mysql-db
+      - signals-mongodb
+      - logs-mongodb
+    environment:
+      - DB_HOST=mysql-db
+      - DB_USER=root
+      - DB_PASS=secret
+      - DB_NAME=inmo
+      - DB_DIALECT=mysql
+      - LOGS_MONGO_URI=mongodb://root:secret@logs-mongodb:27017/logs?authSource=admin
+      - SIGNALS_MONGO_URI=mongodb://root:secret@signals-mongodb:270017/signals?authSource=admin
+      - JWT_SECRET=your_jwt_secret
+      - AUTH0_DOMAIN=dev-ewdlkyz6st76myan.us.auth0.com
+      - AUTH0_CLIENT_ID=ECtvUM0LxlcxVA1vyKJ211IepYkskgxR
+      - AUTH0_CLIENT_SECRET=nGttw8E4isZdGTgpmxhssOLy9UyIfWNLAh45GFeeSsUmeySByGNGnOtP-PK7h-HD
+      - AUTH0_API_TOKEN=your_auth0_api_token
+    networks:
+      - inmo-network
+
+  mysql-db:
+    image: mysql:latest
+    container_name: mysql_inmo
+    environment:
+      - MYSQL_ROOT_PASSWORD=secret
+      - MYSQL_DATABASE=inmo
+    ports:
+      - '3307:3306'
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - inmo-network
+
+  logs-mongodb:
+    image: mongo:latest
+    container_name: logs_mongodb_inmo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+    ports:
+      - '27019:27017'
+    volumes:
+      - logs-mongo-data:/data/db
+    networks:
+      - inmo-network
+
+  signals-mongodb:
+    image: mongo:latest
+    container_name: signals_mongodb_inmo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+    ports:
+      - '27020:27017'
+    volumes:
+      - signals-mongo-data:/data/db
+    networks:
+      - inmo-network
+
+  rabbitmq:
+    image: 'rabbitmq:3-management'
+    container_name: rabbitmq_inmo
+    ports:
+      - '5672:5672' # RabbitMQ standard port
+      - '15672:15672' # RabbitMQ management web interface port
+    environment:
+      RABBITMQ_DEFAULT_USER: 'user'
+      RABBITMQ_DEFAULT_PASS: 'password'
+    volumes:
+      - 'rabbitmq_data:/var/lib/rabbitmq'
+      - 'rabbitmq_log:/var/log/rabbitmq'
+    networks:
+      - inmo-network
+
+volumes:
+  redis-data:
+  redis-queue-data:
+  mysql-data:
+  logs-mongo-data:
+  signals-mongo-data:
+  rabbitmq_data:
+  rabbitmq_log:
+
+networks:
+  inmo-network:
+    external: true

@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  sensor-simulator:
+    build:
+      context: .
+    networks:
+      - inmo-network
+
+  rabbitmq:
+    image: 'rabbitmq:3-management'
+    ports:
+      - '5672:5672' # RabbitMQ standard port
+      - '15672:15672' # RabbitMQ management web interface port
+    environment:
+      RABBITMQ_DEFAULT_USER: 'user'
+      RABBITMQ_DEFAULT_PASS: 'password'
+    volumes:
+      - 'rabbitmq_data:/var/lib/rabbitmq'
+      - 'rabbitmq_log:/var/log/rabbitmq'
+    networks:
+      - inmo-network
+
+volumes:
+  rabbitmq_data:
+  rabbitmq_log:
+
+networks:
+  inmo-network:
+    external: true
