@@ -28,13 +28,13 @@ const queueService = new QueueServiceImpl();
 const propertyAvailabilityService = new PropertyAvailabilityServiceImpl();
 const countryService = new CountryServiceImpl();
 const paymentService = new PaymentServiceImpl();
-const propertyService = new PropertyServiceImpl(paymentService, cache);
-const reservationService = new ReservationServiceImpl(propertyAvailabilityService, countryService, propertyService, paymentService);
+const notificationService = new NotificationServiceImpl();
+const propertyService = new PropertyServiceImpl(paymentService, cache, notificationService);
 const serviceTypeService = new ServiceTypeServiceImpl();
 const sensorService = new SensorServiceImpl(serviceTypeService, propertyService, cache);
 const userService = new UserService();
 const logService = new LogService();
-const notificationService = new NotificationServiceImpl();
+const reservationService = new ReservationServiceImpl(propertyAvailabilityService, countryService, propertyService, paymentService, notificationService);
 const incidentService = new IncidentServiceImpl(sensorService, serviceTypeService, notificationService, propertyService, queueService);
 
 // Inicializar las queues de escucha
