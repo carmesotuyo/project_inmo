@@ -7,5 +7,4 @@ export interface PropertyAvailabilityService {
   getAllAvailabilities(propertyId: number): Promise<InstanceType<typeof PropertyAvailability>[]>;
   checkAvailability(propertyId: number, startDate: string, endDate: string): Promise<boolean>;
   adjustPropertyAvailabilityFromReservationDates(propertyId: number, startDate: string, endDate: string): Promise<void>;
-  updateAvailabilityCancel(propertyId: number, startDate: string, endDate: string, reservationId: number): Promise<void>;
 }
