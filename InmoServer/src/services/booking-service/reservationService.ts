@@ -17,6 +17,7 @@ export class ReservationServiceImpl implements ReservationService {
     private propertyService: PropertyService,
     private paymentService: PaymentService,
   ) {}
+
   async createReservation(data: ReservationRequest): Promise<InstanceType<typeof Reservation>> {
     if (!data) throw Error('Data incorrecta, DTO vacio');
     const { propertyId, adults, children, startDate, endDate, inquilino } = data;
@@ -54,6 +55,7 @@ export class ReservationServiceImpl implements ReservationService {
     // TODO: llamar al servicio den notificaciones para enviar la notificacion
     return reservation;
   }
+
   async getReservationByEmailAndCode(email: string, reservationCode: string): Promise<InstanceType<typeof Reservation> | null> {
     const reservation = await Reservation.findOne({
       where: {
