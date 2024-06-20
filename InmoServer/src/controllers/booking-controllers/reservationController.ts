@@ -10,9 +10,9 @@ export class ReservationController {
     private queueService: QueueService,
   ) {}
 
-  public createReservation = async (req: Request, res: Response) => {
+  public createReservation = async (req: any, res: Response) => {
     try {
-      const reservation = await this.reservationService.createReservation(req.body); //Reservation request
+      const reservation = await this.reservationService.createReservation(req.body, req.user.email); //Reservation request
       this.queueService.addJobToQueue('reservation', reservation.toJSON());
       logger.info(`Reservation created - code: ${reservation.get('reservationCode')}`);
       res.status(201).json(reservation);
@@ -25,9 +25,10 @@ export class ReservationController {
     }
   };
 
-  public getReservation = async (req: Request, res: Response) => {
+  public getReservation = async (req: any, res: Response) => {
     try {
-      const { email, reservationCode } = req.query;
+      const reservationCode = req.params.id;
+      const email = req.user.email;
       if (!email || !reservationCode) {
         res.status(400).json({ message: 'Email y código de reserva son requeridos' });
         return;
@@ -49,6 +50,7 @@ export class ReservationController {
       });
     }
   };
+
   public cancelReservation = async (req: Request, res: Response) => {
     try {
       const { email, reservationCode } = req.body;
@@ -69,9 +71,12 @@ export class ReservationController {
       });
     }
   };
+
   public getReservationsAdmin = async (req: Request, res: Response) => {
     try {
       const filters = req.query;
+      console.log('filters de controller: =======');
+      console.log(filters);
       const reservations = await this.reservationService.getReservationsAdmin(filters);
       logger.info(`Reservations fetched - filters: ${JSON.stringify(filters)}`);
       res.status(200).json(reservations);
@@ -85,20 +90,37 @@ export class ReservationController {
   };
   public processPayment = async (req: Request, res: Response) => {
     try {
-      const { reservationId, email, totalPaid } = req.body;
+      const reservationId = Number(req.params.id);
 
-      if (!reservationId || !email || totalPaid == null) {
-        res.status(400).json({ message: 'Reservation ID, email y total pagado son requeridos' });
-        return;
-      }
-
-      await this.reservationService.processPayment(reservationId, email, totalPaid);
+      await this.reservationService.processPayment(reservationId);
       logger.info(`Payment processed - reservationId: ${reservationId}`);
       res.status(200).json({ message: 'Pago procesado correctamente' });
     } catch (error: any) {
       logger.error('Error processing payment', { error: getErrorMessage(error) });
       res.status(400).json({
         message: 'Error procesando el pago',
+        error: getErrorMessage(error),
+      });
+    }
+  };
+
+  public aproveReservation = async (req: Request, res: Response) => {
+    try {
+      const reservationId = Number(req.params.id); // Convert the reservationId to a number
+      const aprove = req.query.aprove;
+
+      if (!reservationId) {
+        res.status(400).json({ message: 'Reservation ID es requerido' });
+        return;
+      }
+
+      const aproveRes = await this.reservationService.aproveReservation(reservationId, aprove as string);
+      logger.info(`Reservation aprobada - reservationId: ${reservationId}`);
+      res.status(200).json(aproveRes);
+    } catch (error: any) {
+      logger.error('Error aprobando la reserva', { error: getErrorMessage(error) });
+      res.status(400).json({
+        message: 'Error aprobando la reserva',
         error: getErrorMessage(error),
       });
     }

@@ -9,6 +9,8 @@ import { PaymentService } from '../../interfaces/services/paymentService';
 import { fetchAndCache, fetchAndCacheExistence, saveToCache } from '../../cache/withCache';
 import CacheModule from '../../cache/cacheModule';
 import dotenv from 'dotenv';
+import { NotificationService } from '../../interfaces/services/notificationService';
+import { NotificationRequest, NotificationPriority, NotificationType } from '../../dtos/notificationRequest';
 
 dotenv.config();
 
@@ -19,6 +21,7 @@ export class PropertyServiceImpl implements PropertyService {
   constructor(
     private paymentService: PaymentService,
     private cache: CacheModule,
+    private notificationService: NotificationService,
   ) {}
 
   async getPropertyByID(id: number): Promise<InstanceType<typeof Property>> {
@@ -42,7 +45,7 @@ export class PropertyServiceImpl implements PropertyService {
       const offset = (page - 1) * limit;
 
       // Consulta para obtener propiedades con disponibilidad en el rango de fechas especificado
-      const { count, rows } = await Property.findAndCountAll({
+      const { rows } = await Property.findAndCountAll({
         where: whereClause,
         limit,
         offset,
@@ -168,6 +171,16 @@ export class PropertyServiceImpl implements PropertyService {
     };
 
     const property = await Property.create(propertyObject);
+
+    // Enviar notificación de creación de propiedad
+    const notification: NotificationRequest = {
+      type: NotificationType.Property,
+      priority: NotificationPriority.Medium,
+      propertyId: property.get('id') as number,
+      message: 'Nueva propiedad creada',
+    };
+    await this.notificationService.notify(notification);
+
     await saveToCache(this.cache, propertyCacheKeyGenerator, ttl, property.toJSON(), property.get('id'));
     return property;
   }
@@ -187,6 +200,15 @@ export class PropertyServiceImpl implements PropertyService {
     const success = await this.paymentService.processPayment(email, amountToPay);
     if (success) {
       await Property.update({ status: 'Activo' }, { where: { id: propertyId } });
+
+      const notification: NotificationRequest = {
+        type: NotificationType.Payment,
+        priority: NotificationPriority.Medium,
+        propertyId: property.get('id') as number,
+        message: `Pago procesado correctamente para activar propiedad ${propertyId}`,
+      };
+      await this.notificationService.notify(notification);
+
       await this.cache.del(propertyCacheKeyGenerator(propertyId.toString())); //eliminamos la version anterior del cache si es que existia
     } else throw new Error('No se pudo procesar el pago correctamente. Vuelva a intentar');
   }
