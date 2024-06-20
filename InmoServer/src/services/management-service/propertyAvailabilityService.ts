@@ -19,6 +19,18 @@ export class PropertyAvailabilityServiceImpl implements PropertyAvailabilityServ
     return await PropertyAvailability.create({ ...data });
   }
 
+  async updateAvailabilityCancel(propertyId: number, startDate: string, endDate: string, reservationId: number): Promise<void> {
+    try {
+      const newAvailability: any = {
+        propertyId,
+        startDate,
+        endDate,
+      };
+    } catch (error) {
+      throw new Error('Error updating availability');
+    }
+  }
+
   async updateAvailability(id: number, data: PropertyAvailabilityRequest): Promise<InstanceType<typeof PropertyAvailability>> {
     if (!data) throw Error('Data incorrecta, DTO vacio');
     const availability = await PropertyAvailability.findByPk(id);
